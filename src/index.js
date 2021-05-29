@@ -1,14 +1,20 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import {FirebaseAuthProvider} from "@react-firebase/auth";
+import {firebaseConfig} from "./config/firebaseConfig";
+import { firebase } from '@firebase/app';
+import "@firebase/auth";
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <FirebaseAuthProvider firebase={firebase} {...firebaseConfig}>
+      <App />
+    </FirebaseAuthProvider>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want to start measuring performance in your app, pass a function
