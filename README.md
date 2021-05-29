@@ -1,70 +1,57 @@
-# Getting Started with Create React App
+# TaskGo
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+TaskGo is a web-based todo-list to help users keep track of all their tasks and provides notification when incomplete tasks are about to be due.
 
-## Available Scripts
+The website that we designed is mainly for NUS students. As such, features like importing calendars from NUSMods are applicable to undergraduates only.
 
-In the project directory, you can run:
+* Insert single and routine tasks
+* Create tags that users can assign tasks to
+* Priority and Tag sorting
+* Email notification for incomplete tasks that are due soon.
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Table of Contents
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+* [Visuals](#visuals)
+* [Scope of Functionalities](#scope-of-functionalities)
+* [Examples of use](#examples-of-use)
+* [Deployment](#deployment)
+* [Comparison with similar platforms](#comparison-with-similar-platforms)
+* [Project Status](#project-status)
 
-### `npm test`
+## Visuals
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+[Insert pictures here]
 
-### `npm run build`
+## Scope of Functionalities
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Social login with Google
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+[Our login system using google]
+### Insert Tasks
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+[What information are needed]
+### Task Sorting
 
-### `npm run eject`
+[Priority and Task type]
+### Task Reminder via E-mail
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+[Node mailer]
+## Examples of use
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+[Some ways to use the app]
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Deployment
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+[Using Vercel as our deployment service]
 
-## Learn More
+## Comparison with similar platforms
+TaskGo is a web-based to-do list that is designed to help our users to keep track of their routine and ad-hoc work in a clear and concise web application. The task can be modified and added according to the user's needs. As such, users would be able to experience flexibility in customising their own schedules. Users are also given a kind reminder via e-mail when their tasks are almost due.
+### NUSMods
+NUSMods simply provides the users with the general lesson schedule. More can be done on the scheduling side, where students might want to add more personalised tasks onto their schedule.
+### LumiNUS
+LumiNUS highlights the due dates of important submissions / tests, as entered by NUS Module Coordinators. However, some of these dates are not accurate, and students themselves are unable to make edits and improvements onto such scheduling functionalities.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Project Status
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+[Milestone 1]
