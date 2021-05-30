@@ -71,21 +71,23 @@ We engaged Vercel as our platform to deploy and host our web-page. The site can 
  
  ## Visuals
 ### Program Flow
+<img width="476" alt="1" src="https://user-images.githubusercontent.com/70288012/120111383-53396600-c1a4-11eb-861f-59272f3191db.PNG">
 
 ### Examples of use
 * Accessing our homepage
-<img src="./public/Homepage.jpg">
+![Homepage](https://user-images.githubusercontent.com/77228324/120111294-f3db5600-c1a3-11eb-9e1e-95d5d39f34d9.png)
 
 * TaskGo Dashboard
+![Dashboard](https://user-images.githubusercontent.com/77228324/120111312-048bcc00-c1a4-11eb-8471-5b2992f210b2.png)
 
 * Adding Tasks
-
+![Add Tasks](https://user-images.githubusercontent.com/77228324/120111325-140b1500-c1a4-11eb-8ab6-5697584056f2.png)
 * Task History
-
+![Completed Tasks](https://user-images.githubusercontent.com/77228324/120111337-1f5e4080-c1a4-11eb-8679-323f5db3f42d.png)
 * Calendar
- 
+ ![Calendar Page](https://user-images.githubusercontent.com/77228324/120111352-300eb680-c1a4-11eb-8874-c3412cad3786.png)
 * Settings
-
+![Settings](https://user-images.githubusercontent.com/77228324/120111362-3735c480-c1a4-11eb-81be-ff283a45af71.png)
  
 ## Comparison with similar platforms
 TaskGo is a web-based to-do list that is designed to help our users to keep track of their routine and ad-hoc work in a clear and concise web application. The task can be modified and added according to the user's needs. As such, users would be able to experience flexibility in customising their own schedules. 
