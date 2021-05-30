@@ -74,7 +74,7 @@ We engaged Vercel as our platform to deploy and host our web-page. The site can 
 
 ### Examples of use
 * Accessing our homepage
-<img src=“https://github.com/KengXIII/TaskGo/blob/login-logout/public/Homepage.png”>
+<img src="./public/Homepage.jpg">
 
 * TaskGo Dashboard
 
