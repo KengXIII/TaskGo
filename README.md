@@ -71,7 +71,7 @@ We engaged Vercel as our platform to deploy and host our web-page. The site can 
  
  ## Visuals
 ### Program Flow
-<img width="476" alt="1" src="https://user-images.githubusercontent.com/70288012/120111383-53396600-c1a4-11eb-861f-59272f3191db.PNG">
+![1 901](https://user-images.githubusercontent.com/77228324/120111587-0d30d200-c1a5-11eb-82d1-7ecb23296f50.png)
 
 ### Examples of use
 * Accessing our homepage
