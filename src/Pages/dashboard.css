@@ -1,14 +1,21 @@
 .Dashboard {
   text-align: center;
-}
-
-.Dashboard-header {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vh);
+  font-size: calc(16px);
   color: white;
 }
+
+/* .Dashboard-header {
+  background-color: #282c34;
+  min-height: 30vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(50px);
+  color: white;
+} */
+

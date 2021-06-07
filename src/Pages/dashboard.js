@@ -1,29 +1,38 @@
 import "./dashboard.css";
 import { Button } from "@material-ui/core";
-import { IfFirebaseAuthed} from "@react-firebase/auth";
+import { IfFirebaseAuthed } from "@react-firebase/auth";
+import TodoList from "../components/TodoList";
 
 function Dashboard() {
   const handleSignOut = (firebase) => {
     firebase.auth().signOut();
   };
+
   return (
     <div className="Dashboard">
-      <header className="Dashboard-header">
-        <p>
-          <strong>Welcome!</strong>
-        </p>
-          <IfFirebaseAuthed>
+    <br></br>
+      <div className="logout-button" style={{ display: "flex"}}>
+        <IfFirebaseAuthed>
           {({ firebase }) => (
             <Button
               variant="contained"
-              color="primary"
+              style={{ marginLeft: "auto", marginRight: "10px"}}
+              color="secondary"
               onClick={() => handleSignOut(firebase)}
             >
               <b>Logout</b>
             </Button>
-            )}
-          </IfFirebaseAuthed>
-      </header>
+          )}
+        </IfFirebaseAuthed>
+      </div>
+
+      <h1 style={{ "font-size": "40px" }} className="Dashboard-header">
+        <strong>What would you like to do?</strong>
+      </h1>
+
+      <body className="Dashboard-body">
+        <TodoList />
+      </body>
     </div>
   );
 }

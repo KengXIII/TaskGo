@@ -2,6 +2,7 @@ import logo from "./Final Logo White.png";
 import "./homepage.css";
 import { Button } from "@material-ui/core";
 import { FirebaseAuthConsumer } from "@react-firebase/auth";
+import AccountBox from "@material-ui/icons/AccountBox"
 
 function Homepage() {
   const handleGoogleSignIn = (firebase) => {
@@ -11,24 +12,29 @@ function Homepage() {
 
   return (
     <div className="Homepage">
+
+      <img src={logo} className="Homepage-logo" alt="logo"/>
+      
       <header className="Homepage-header">
-        <img src={logo} className="Homepage-logo" alt="logo" />
-        <br></br>
         <p>
           Login via google
         </p>
-        <FirebaseAuthConsumer>
+      </header>
+
+      <body>
+      <FirebaseAuthConsumer>
           {({ firebase }) => (
             <Button
               variant="contained"
               color="primary"
+              startIcon={<AccountBox />}
               onClick={() => handleGoogleSignIn(firebase)}
             >
               <b>Login</b>
             </Button>
           )}
         </FirebaseAuthConsumer>
-      </header>
+      </body>
     </div>
   );
 }
