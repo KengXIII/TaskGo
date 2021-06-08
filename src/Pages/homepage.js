@@ -13,7 +13,7 @@ function Homepage() {
   return (
     <div className="Homepage">
 
-      <img src={logo} className="Homepage-logo" alt="logo"/>
+      <img src={logo} className="Homepage-logo" style={{ display: "flex"}} alt="logo"/>
       
       <header className="Homepage-header">
         <p>
