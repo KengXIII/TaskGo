@@ -1,8 +1,8 @@
-import logo from "./Final Logo White.png";
+import logo from "../components/Final Logo White.png";
 import "./homepage.css";
 import { Button } from "@material-ui/core";
 import { FirebaseAuthConsumer } from "@react-firebase/auth";
-import AccountBox from "@material-ui/icons/AccountBox"
+import AccountBox from "@material-ui/icons/AccountBox";
 
 function Homepage() {
   const handleGoogleSignIn = (firebase) => {
@@ -12,19 +12,24 @@ function Homepage() {
 
   return (
     <div className="Homepage">
+      <div>
+        <img
+          src={logo}
+          className="Homepage-logo"
+          style={{ display: "block" }}
+          alt="logo"
+        />
+      </div>
 
-      <img src={logo} className="Homepage-logo" style={{ display: "flex"}} alt="logo"/>
-      
-      <header className="Homepage-header">
-        <p>
-          Login via google
-        </p>
-      </header>
-
-      <body>
-      <FirebaseAuthConsumer>
+      <div>
+        <div className="Homepage-header">
+          <p>Login via Google</p>
+        </div>
+        <FirebaseAuthConsumer>
           {({ firebase }) => (
             <Button
+              style={{margin: '0 auto', display: "flex"}}
+              className="login-button"
               variant="contained"
               color="primary"
               startIcon={<AccountBox />}
@@ -34,7 +39,7 @@ function Homepage() {
             </Button>
           )}
         </FirebaseAuthConsumer>
-      </body>
+      </div>
     </div>
   );
 }

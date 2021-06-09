@@ -1,29 +1,32 @@
 .Homepage {
-  text-align: center;
   background-color: #282c34;
   min-height: 100vh;
+  min-width: 100vw;
   display: flex;
   flex-direction: column;
 }
 
 .Homepage-logo {
-  margin-top: 100px;
+  margin-top: 20vh;
   height: 30vh;
-  align-self: center;
-  justify-content: center;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .Homepage-header {
   margin-top: 20px;
   font-size: calc(20px);
   color: white;
-  justify-content: center;
+  text-align: center;
+  letter-spacing: 1.5px;
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 @media screen and (max-width:480px) {
   .Homepage-logo {
     height: 12vmax;
-    margin-top: 100px;
+    margin-top: 20vh;
     align-self: center;
   }
 }

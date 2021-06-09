@@ -1,8 +1,11 @@
-import './App.css';
-import Dashboard from './Pages/dashboard';
-import Homepage from './Pages/homepage';
+import Dashboard from "./Pages/dashboard";
+import Homepage from "./Pages/homepage";
 
-import {FirebaseAuthConsumer, IfFirebaseAuthed, IfFirebaseUnAuthed} from "@react-firebase/auth";
+import {
+  FirebaseAuthConsumer,
+  IfFirebaseAuthed,
+  IfFirebaseUnAuthed,
+} from "@react-firebase/auth";
 
 function App() {
   return (
@@ -17,6 +20,6 @@ function App() {
       </FirebaseAuthConsumer>
     </div>
   );
-} 
+}
 
 export default App;

@@ -2,6 +2,8 @@ import "./dashboard.css";
 import { Button } from "@material-ui/core";
 import { IfFirebaseAuthed } from "@react-firebase/auth";
 import TodoList from "../components/TodoList";
+import Sidebar from "../components/SideBar";
+import Avatar from "../components/Avatar.png";
 
 function Dashboard() {
   const handleSignOut = (firebase) => {
@@ -10,29 +12,35 @@ function Dashboard() {
 
   return (
     <div className="Dashboard">
-    <br></br>
-      <div className="logout-button" style={{ display: "flex"}}>
-        <IfFirebaseAuthed>
-          {({ firebase }) => (
-            <Button
-              variant="contained"
-              style={{ marginLeft: "auto", marginRight: "10px"}}
-              color="secondary"
-              onClick={() => handleSignOut(firebase)}
-            >
-              <b>Logout</b>
-            </Button>
-          )}
-        </IfFirebaseAuthed>
+      <div className="Left">
+        <img
+          src={Avatar}
+          className="AvatarPic"
+          style={{ display: "flex" }}
+          alt="logo"
+        />
+        <Sidebar />
       </div>
-
-      <h1 style={{ "font-size": "40px" }} className="Dashboard-header">
-        <strong>What would you like to do?</strong>
-      </h1>
-
-      <body className="Dashboard-body">
-        <TodoList />
-      </body>
+      <div className="main">
+        <div className="Topbar">
+          <IfFirebaseAuthed>
+            {({ firebase }) => (
+              <Button
+                variant="contained"
+                style={{ float: "right", margin: "11px" }}
+                color="secondary"
+                className="logout-button"
+                onClick={() => handleSignOut(firebase)}
+              >
+                <b>Logout</b>
+              </Button>
+            )}
+          </IfFirebaseAuthed>
+        </div>
+        <div className="Content">
+          <TodoList />
+        </div>
+      </div>
     </div>
   );
 }
