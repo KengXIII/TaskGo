@@ -57,13 +57,14 @@ function TodoList() {
           <br></br>
         </div>
         Pending Tasks
-        <Todo 
-          className="scroll-list"
-          todos={todos}
-          completeTodo={completeTodo}
-          removeTodo={removeTodo}
-          updateTodo={updateTodo}
-        />
+        <div className="scroll-list">
+          <Todo 
+            todos={todos}
+            completeTodo={completeTodo}
+            removeTodo={removeTodo}
+            updateTodo={updateTodo}
+          />
+        </div>
       </div>
     </div>
   );

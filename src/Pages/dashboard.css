@@ -105,4 +105,10 @@
   padding: 0 15px;
 }
 
+.scroll-list {
+  overflow-y: auto;
+  max-height: 50vh;
+  margin: 5px 0;
+}
+
 
