@@ -1,5 +1,6 @@
 import React from "react";
 import { SidebarData } from "./SidebarData";
+import { Link } from 'react-router-dom';
 
 function Sidebar() {
   return (
@@ -9,14 +10,12 @@ function Sidebar() {
           return (
             <li
               key={key}
-              className="row"
-              id={window.location.pathname === val.link ? "active" : ""}
-              onClick={() => {
-                window.location.pathname = val.link;
-              }}
+              // id={ useLocation() === val.link ? "active" : ""}
             >
-              <div id="icon">{val.icon}</div> 
-              <div id="title">{val.title}</div>
+              <Link to={val.link} className="row" style={{textDecoration: "none"}}>
+                <div id="icon">{val.icon}</div>
+                <div id="title">{val.title}</div>
+              </Link>
             </li>
           );
         })}

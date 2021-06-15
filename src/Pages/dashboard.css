@@ -47,7 +47,7 @@
 }
 
 .Sidebar {
-  margin-top: 40px;
+  margin-top: 30px;
 }
 
 .SidebarList {
@@ -74,19 +74,19 @@
   background-color:#282C34;
 }
 
-.SidebarList #active {
+/* .SidebarList #active {
   cursor: pointer;
   background-color:#648C8C;
-}
+} */
 
 .row #icon {
-  flex: 30%;
+  flex: 35%;
   display: grid;
   place-items: center;
 }
 
 .row #title {
-  flex: 70%;
+  flex: 60%;
 }
 
 .todo-row {
@@ -109,6 +109,14 @@
   overflow-y: auto;
   max-height: 50vh;
   margin: 5px 0;
+}
+
+.username {
+  color: lightgray;
+  text-align: center;
+  margin: 15px 0;
+  font-size: x-large;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 
