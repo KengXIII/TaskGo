@@ -1,8 +1,8 @@
 import "./dashboard.css";
 import { Button } from "@material-ui/core";
 import { IfFirebaseAuthed } from "@react-firebase/auth";
-import TodoList from "../components/TodoList";
 import Sidebar from "../components/SideBar";
+import TaskOverview from "../components/TaskManager/TaskOverview";
 import { firebase } from "@firebase/app";
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import TaskHistory from "../components/TaskHistory";
@@ -54,7 +54,7 @@ function Dashboard() {
                 <Redirect to="/dashboard" />
               </Route>
               <Route exact path="/dashboard">
-                <TodoList />
+                <TaskOverview />
               </Route>
               <Route exact path="/task-history">
                 <TaskHistory />

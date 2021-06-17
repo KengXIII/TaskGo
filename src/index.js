@@ -6,6 +6,7 @@ import {FirebaseAuthProvider} from "@react-firebase/auth";
 import {firebaseConfig} from "./config/firebaseConfig";
 import { firebase } from '@firebase/app';
 import "@firebase/auth";
+import "@firebase/firestore";
 
 ReactDOM.render(
   <React.StrictMode>
