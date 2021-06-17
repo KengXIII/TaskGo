@@ -3,11 +3,11 @@ import { Button } from "@material-ui/core";
 import { IfFirebaseAuthed } from "@react-firebase/auth";
 import TodoList from "../components/TodoList";
 import Sidebar from "../components/SideBar";
-import { firebase } from "@firebase/app";
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import TaskHistory from "../components/TaskHistory";
 import Settings from "../components/Settings";
 import Calendar from "../components/Calendar";
+import Profile from "../components/Profile";
 
 function Dashboard() {
   const handleSignOut = (firebase) => {
@@ -18,16 +18,7 @@ function Dashboard() {
     <Router>
       <div className="Dashboard">
         <div className="Left">
-          <img
-            src={firebase.auth().currentUser.photoURL}
-            className="AvatarPic"
-            style={{ display: "flex", borderRadius: "50%" }}
-            alt="logo"
-          />
-          <div className="username">
-            {firebase.auth().currentUser.displayName}
-          </div>
-
+          <Profile />
           <Sidebar />
         </div>
 
@@ -37,7 +28,6 @@ function Dashboard() {
               {({ firebase }) => (
                 <Button
                   variant="contained"
-                  style={{ float: "right", margin: "11px" }}
                   color="secondary"
                   className="logout-button"
                   onClick={() => handleSignOut(firebase)}

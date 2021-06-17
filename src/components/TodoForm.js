@@ -26,7 +26,7 @@ function TodoForm(props) {
     return(
         <form className="todo-entrybox" onSubmit={handleSubmit}>
           <Input 
-            style={{ marginRight: "1rem", color: "black", paddingLeft: "3px"}}
+            style={{ marginRight: "10px", color: "black", paddingLeft: "3px"}}
             placeholder='Enter Task Name'
             value={input}
             inputProps={{ 'aria-label': 'description' }}
