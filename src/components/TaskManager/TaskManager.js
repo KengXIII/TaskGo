@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { firebase } from "@firebase/app";
 import "@firebase/firestore";
+import { Button, Input } from "@material-ui/core";
+import { AiOutlineDelete } from "react-icons/ai";
 
 function TaskManager(props) {
   const { tasks, setTasks } = props;
@@ -20,6 +22,7 @@ function TaskManager(props) {
       {
         description: description,
         isComplete: false,
+        dateCreated: firebase.firestore.Timestamp.now(),
       },
     ];
 
@@ -37,25 +40,38 @@ function TaskManager(props) {
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
 
-    console.log("2");
     db.collection("/tasks").doc(uid).set({ tasks: tasks });
   }, [tasks]);
+
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current.focus();
+  });
 
   return (
     <>
       <div>
         <h2>Add Tasks</h2>
         <form onSubmit={handleAddTask}>
-          <label>
-            Task:
-            <input
-              style={{ margin: "0 1rem" }}
-              type="text"
-              value={newTaskText}
-              onChange={(event) => setNewTaskText(event.target.value)}
-            />
-          </label>
-          <input type="submit" value="Add" />
+          <Input
+            className="task-name-field"
+            style={{ marginRight: "1rem", paddingLeft: "3px" }}
+            placeholder="Enter Task Name"
+            value={newTaskText}
+            inputProps={{ "aria-label": "description" }}
+            // Ensures that the cursor is on the textfield when component loads
+            ref={inputRef}
+            onChange={(event) => setNewTaskText(event.target.value)}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            className="submit-button"
+            onClick={handleAddTask}
+          >
+            create task
+          </Button>
         </form>
       </div>
 
@@ -87,33 +103,47 @@ function TaskList(props) {
     setTasks(newTasks);
   }
 
+  function handleDeleteTask(task, index) {
+    const newTask = [
+      ...tasks.slice(0, index), 
+      ...tasks.slice(index + 1),
+    ];
+    setTasks(newTask);
+  }
+
   return (
     <table
       style={{
         margin: "0 auto",
         width: "80%",
-        borderStyle: "solid",
         textAlign: "left",
         float: "left",
       }}
     >
       <thead>
         <tr>
-          <th style={{ width: "8%", textAlign: "center" }}>No.</th>
+          <th style={{ width: "8%", textAlign: "left" }}>No.</th>
           <th style={{ width: "50%" }}>Task</th>
           <th style={{ width: "5%" }}>Completed</th>
+          <th style={{ width: "5%" }}>Delete</th>
         </tr>
       </thead>
       <tbody>
         {tasks.map((task, index) => (
           <tr key={index}>
-            <td style={{ textAlign: "center" }}>{index + 1}</td>
+            <td style={{ textAlign: "left" }}>{index + 1}</td>
             <td>{task.description}</td>
             <td style={{ textAlign: "center" }}>
               <input
                 type="checkbox"
                 checked={task.isComplete}
                 onChange={() => handleTaskToggle(task, index)}
+              />
+            </td>
+            <td style={{ textAlign: "center" }}>
+              <AiOutlineDelete
+                onClick={() => handleDeleteTask(task, index)}
+                className="delete-icon"
               />
             </td>
           </tr>
