@@ -97,7 +97,7 @@ function TaskList(props) {
       </thead>
       <tbody>
         {tasks.map((task, index) => (
-          <tr key={task.description}>
+          <tr key={index}>
             <td>{index + 1}</td>
             <td>{task.description}</td>
             <td>
