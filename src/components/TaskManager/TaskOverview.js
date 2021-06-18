@@ -1,33 +1,44 @@
-import React, {useState, useEffect} from "react";
-import { firebase } from '@firebase/app';
+import React, { useState, useEffect } from "react";
+import { firebase } from "@firebase/app";
 import TaskManager from "./TaskManager";
 
 function TaskOverview() {
-    const [task, setTasksState] = useState([]);
+  const [task, setTasksState] = useState([]);
+  // Boolean to check if data has been loaded from firestore
+  const [loaded, setLoaded] = useState(false);
 
-    function setTasks(newTasks) {
-      setTasksState(newTasks);
-    }
-  
-    useEffect(() => {
-      const uid = firebase.auth().currentUser?.uid;
-      const db = firebase.firestore();
-      const docRef = db.collection("/tasks").doc(uid);
-  
-      docRef.get().then((doc) => {
-        if (doc.exists) {
-          setTasksState(doc.data().tasks);
-        } else {
-          setTasksState([]);
-        }
-      });
-    }, []);
+  function setTasks(newTasks) {
+    setTasksState(newTasks);
+  }
 
+  useEffect(() => {
+    const uid = firebase.auth().currentUser?.uid;
+    const db = firebase.firestore();
+    const docRef = db.collection("/tasks").doc(uid);
+
+    docRef.get().then((doc) => {
+      if (doc.exists) {
+        console.log("1");
+        setTasksState(doc.data().tasks);
+        // confirms that data has been loaded
+        setLoaded(true);
+      } else {
+        setTasksState([]);
+      }
+    });
+  }, []);
+
+  // Before rendering the TaskManager component, the data has to be loaded first so that 
+  // it does not push the wrong updates to firestore
+  if (loaded) {
     return (
-        <main>
-          <TaskManager tasks={task} setTasks={setTasks} />
-        </main>
+      <main>
+        <TaskManager tasks={task} setTasks={setTasks} />
+      </main>
     );
+  } else {
+    return null;
+  }
 }
 
 export default TaskOverview;

@@ -1,16 +1,16 @@
-import React, {useState, useEffect} from "react";
-import { firebase } from '@firebase/app';
+import React, { useState, useEffect } from "react";
+import { firebase } from "@firebase/app";
 import "@firebase/firestore";
 
 function TaskManager(props) {
-  const {tasks, setTasks} = props;
+  const { tasks, setTasks } = props;
   const [newTaskText, setNewTaskText] = useState("");
 
   function handleAddTask(event) {
-      // Prevent browser refresh everytime the "Add Task" button is pressed.
-      event.preventDefault();
-      addTask(newTaskText);
-      setNewTaskText("");
+    // Prevent browser refresh everytime the "Add Task" button is pressed.
+    event.preventDefault();
+    addTask(newTaskText);
+    setNewTaskText("");
   }
 
   // Adds tasks based on the description as input by the user.
@@ -19,12 +19,12 @@ function TaskManager(props) {
       ...tasks,
       {
         description: description,
-        isComplete: false
-      }
+        isComplete: false,
+      },
     ];
 
     if (!description || /^\s*$/.test(description)) {
-    return;
+      return;
     }
 
     setTasks(newTasks);
@@ -36,6 +36,8 @@ function TaskManager(props) {
     //Optional chaining: "?." accounts for the case when currentUser is null.
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
+
+    console.log("2");
     db.collection("/tasks").doc(uid).set({ tasks: tasks });
   }, [tasks]);
 
@@ -62,7 +64,7 @@ function TaskManager(props) {
         {tasks.length > 0 ? (
           <TaskList tasks={tasks} setTasks={setTasks} />
         ) : (
-          <p>No tasks yet! Add one above!</p>
+          <p>Go and have fun for today!</p>
         )}
       </div>
     </>
@@ -75,32 +77,39 @@ function TaskList(props) {
   // Toggles between completed and incomplete.
   function handleTaskToggle(toggledTask, toggledTaskIndex) {
     const newTasks = [
-        ...tasks.slice(0,toggledTaskIndex),
-        {
-            description: toggledTask.description,
-            isComplete: !toggledTask.isComplete
-        },
-        ...tasks.slice(toggledTaskIndex + 1)
+      ...tasks.slice(0, toggledTaskIndex),
+      {
+        description: toggledTask.description,
+        isComplete: !toggledTask.isComplete,
+      },
+      ...tasks.slice(toggledTaskIndex + 1),
     ];
     setTasks(newTasks);
-
-}
+  }
 
   return (
-    <table style={{ margin: "0 auto", width: "100%", borderStyle: "solid" }}>
+    <table
+      style={{
+        margin: "0 auto",
+        width: "80%",
+        borderStyle: "solid",
+        textAlign: "left",
+        float: "left",
+      }}
+    >
       <thead>
         <tr>
-          <th>No.</th>
-          <th>Task</th>
-          <th>Completed</th>
+          <th style={{ width: "8%", textAlign: "center" }}>No.</th>
+          <th style={{ width: "50%" }}>Task</th>
+          <th style={{ width: "5%" }}>Completed</th>
         </tr>
       </thead>
       <tbody>
         {tasks.map((task, index) => (
           <tr key={index}>
-            <td>{index + 1}</td>
+            <td style={{ textAlign: "center" }}>{index + 1}</td>
             <td>{task.description}</td>
-            <td>
+            <td style={{ textAlign: "center" }}>
               <input
                 type="checkbox"
                 checked={task.isComplete}

@@ -4,7 +4,12 @@ import { IfFirebaseAuthed } from "@react-firebase/auth";
 import Sidebar from "../components/SideBar";
 import TaskOverview from "../components/TaskManager/TaskOverview";
 import { firebase } from "@firebase/app";
-import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from "react-router-dom";
 import TaskHistory from "../components/TaskHistory";
 import Settings from "../components/Settings";
 import Calendar from "../components/Calendar";
@@ -49,23 +54,25 @@ function Dashboard() {
           </div>
 
           <div className="Content">
-            <Switch>
-              <Route exact path="/">
-                <Redirect to="/dashboard" />
-              </Route>
-              <Route exact path="/dashboard">
-                <TaskOverview />
-              </Route>
-              <Route exact path="/task-history">
-                <TaskHistory />
-              </Route>
-              <Route exact path="/calendar">
-                <Calendar />
-              </Route>
-              <Route exact path="/settings">
-                <Settings />
-              </Route>
-            </Switch>
+            <div className="changingContents">
+              <Switch>
+                <Route exact path="/">
+                  <Redirect to="/dashboard" />
+                </Route>
+                <Route exact path="/dashboard">
+                  <TaskOverview />
+                </Route>
+                <Route exact path="/task-history">
+                  <TaskHistory />
+                </Route>
+                <Route exact path="/calendar">
+                  <Calendar />
+                </Route>
+                <Route exact path="/settings">
+                  <Settings />
+                </Route>
+              </Switch>
+            </div>
           </div>
         </div>
       </div>
