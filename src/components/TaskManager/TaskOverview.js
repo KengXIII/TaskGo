@@ -14,17 +14,16 @@ function TaskOverview() {
   useEffect(() => {
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
-    const docRef = db.collection("/tasks").doc(uid);
+    const docRef = db.collection("/users").doc(uid);
 
     docRef.get().then((doc) => {
       if (doc.exists) {
-        console.log("1");
         setTasksState(doc.data().tasks);
-        // confirms that data has been loaded
-        setLoaded(true);
       } else {
         setTasksState([]);
       }
+      // confirms that data has been loaded
+      setLoaded(true);
     });
   }, []);
 
