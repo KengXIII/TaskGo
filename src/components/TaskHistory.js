@@ -3,12 +3,12 @@ import { firebase } from "@firebase/app";
 import { AiOutlineDelete } from "react-icons/ai";
 
 function TaskHistory() {
-  const [task, setTasksState] = useState([]);
+  const [history, setHistory] = useState([]);
   // Boolean to check if data has been loaded from firestore
   const [loaded, setLoaded] = useState(false);
 
   function setTasks(newTasks) {
-    setTasksState(newTasks);
+    setHistory(newTasks);
   }
 
   useEffect(() => {
@@ -18,9 +18,9 @@ function TaskHistory() {
 
     docRef.get().then((doc) => {
       if (doc.exists) {
-        setTasksState(doc.data().history);
+        setHistory(doc.data().history);
       } else {
-        setTasksState([]);
+        setHistory([]);
       }
       // confirms that data has been loaded
       setLoaded(true);
@@ -28,26 +28,25 @@ function TaskHistory() {
   }, []);
 
   if (loaded) {
-    return <TaskList tasks={task} setTasks={setTasks} />;
+    return <TaskList history={history} setHistory={setTasks} />;
   } else {
     return null;
   }
 }
 
 function TaskList(props) {
-  const { tasks, setTasks } = props;
+  const { history, setHistory } = props;
 
   useEffect(() => {
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
-
-    db.collection("/users").doc(uid).update({ history: tasks });
-  }, [tasks]);
+    db.collection("/users").doc(uid).update({ history: history });
+  }, [history]);
 
   function handleDeleteTask(task, index) {
-    const newTask = [...tasks.slice(0, index), ...tasks.slice(index + 1)];
+    const newTask = [...history.slice(0, index), ...history.slice(index + 1)];
 
-    setTasks(newTask);
+    setHistory(newTask);
   }
 
   return (
@@ -70,7 +69,7 @@ function TaskList(props) {
             </tr>
           </thead>
           <tbody>
-            {tasks.map((task, index) => (
+            {history.map((task, index) => (
               <tr key={index}>
                 <td style={{ textAlign: "left" }}>{index + 1}</td>
                 <td>{task.description}</td>

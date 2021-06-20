@@ -37,7 +37,7 @@ function TaskManager(props) {
   // an update to our Firestore database will be dispatched.
   useEffect(() => {
     //Optional chaining: "?." accounts for the case when currentUser is null.
-    const uid = firebase.auth().currentUser.uid;
+    const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
     const docRef = db.collection("/users").doc(uid);
 
@@ -91,13 +91,6 @@ function TaskManager(props) {
 
 function TaskList(props) {
   const { tasks, setTasks } = props;
-  const [deletedTasks, setDeletedTasks] = useState([]);
-
-  useEffect(() => {
-    const uid = firebase.auth().currentUser.uid;
-    const db = firebase.firestore();
-    db.collection("/users").doc(uid).update({ history: deletedTasks });
-  }, [deletedTasks]);
 
   // Toggles between completed and incomplete.
   function handleTaskToggle(toggledTask, toggledTaskIndex) {
@@ -113,11 +106,13 @@ function TaskList(props) {
   }
 
   function handleDeleteTask(task, index) {
-    const temp = tasks[index];
-    const pendingDelete = [...deletedTasks, temp];
-    setDeletedTasks(pendingDelete);
+    const uid = firebase.auth().currentUser?.uid;
+    const db = firebase.firestore();
+    //Add the deleted task into firestore
+    db.collection("/users").doc(uid).update({ history: firebase.firestore.FieldValue.arrayUnion(tasks[index])});
+    //Remove the task from local array
     const newTask = [...tasks.slice(0, index), ...tasks.slice(index + 1)];
-
+    //Update array with new elements
     setTasks(newTask);
   }
 
@@ -151,7 +146,7 @@ function TaskList(props) {
                   type="checkbox"
                   checked={task.isComplete}
                   onChange={() => handleTaskToggle(task, index)}
-                />
+                />  
               </td>
               <td style={{ textAlign: "center" }}>
                 <AiOutlineDelete
