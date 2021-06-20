@@ -12,7 +12,7 @@ function TaskOverview() {
   }
 
   useEffect(() => {
-    const uid = firebase.auth().currentUser?.uid;
+    const uid = firebase.auth().currentUser.uid;
     const db = firebase.firestore();
     const docRef = db.collection("/users").doc(uid);
 

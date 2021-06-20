@@ -37,10 +37,16 @@ function TaskManager(props) {
   // an update to our Firestore database will be dispatched.
   useEffect(() => {
     //Optional chaining: "?." accounts for the case when currentUser is null.
-    const uid = firebase.auth().currentUser?.uid;
+    const uid = firebase.auth().currentUser.uid;
     const db = firebase.firestore();
+    const docRef = db.collection("/users").doc(uid);
 
-    db.collection("/users").doc(uid).update({ tasks: tasks });
+    docRef.get().then((doc) => {
+      if (doc.exists) {
+        db.collection("/users").doc(uid).update({ tasks: tasks });
+      } else {
+        db.collection("/users").doc(uid).set({ tasks: tasks });
+      }})    
   }, [tasks]);
 
   const inputRef = useRef(null);
@@ -88,9 +94,8 @@ function TaskList(props) {
   const [deletedTasks, setDeletedTasks] = useState([]);
 
   useEffect(() => {
-    const uid = firebase.auth().currentUser?.uid;
+    const uid = firebase.auth().currentUser.uid;
     const db = firebase.firestore();
-
     db.collection("/users").doc(uid).update({ history: deletedTasks });
   }, [deletedTasks]);
 
