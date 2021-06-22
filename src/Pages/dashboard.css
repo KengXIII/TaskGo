@@ -120,12 +120,8 @@
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
-.logout-button {
-  position: absolute;
-  top: 20%;
-  bottom: 20%;
-  left: 90%;
-  height: 60%;
+.changingContents {
+  margin: 25px;
 }
 
 
