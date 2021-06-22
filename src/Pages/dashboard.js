@@ -1,7 +1,7 @@
 import "./dashboard.css";
 import { Button } from "@material-ui/core";
 import Sidebar from "../components/SideBar";
-import TaskOverview from "../components/TaskManager/TaskOverview";
+import TaskManager from "../components/TaskManager/TaskManager";
 import { firebase } from "@firebase/app";
 import {
   BrowserRouter as Router,
@@ -43,7 +43,7 @@ function Dashboard() {
                   <Redirect to="/dashboard" />
                 </Route>
                 <Route exact path="/dashboard">
-                  <TaskOverview />
+                  <TaskManager />
                 </Route>
                 <Route exact path="/task-history">
                   <TaskHistory />

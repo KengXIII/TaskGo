@@ -1,164 +1,43 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { firebase } from "@firebase/app";
-import "@firebase/firestore";
-import { Button, Input } from "@material-ui/core";
-import { AiOutlineDelete } from "react-icons/ai";
+import TaskForm from "./TaskForm";
 
-function TaskManager(props) {
-  const { tasks, setTasks } = props;
-  const [newTaskText, setNewTaskText] = useState("");
+function TaskManager() {
+  const [task, setTasksState] = useState([]);
+  // Boolean to check if data has been loaded from firestore
+  const [loaded, setLoaded] = useState(false);
 
-  function handleAddTask(event) {
-    // Prevent browser refresh everytime the "Add Task" button is pressed.
-    event.preventDefault();
-    addTask(newTaskText);
-    setNewTaskText("");
+  function setTasks(newTasks) {
+    setTasksState(newTasks);
   }
 
-  // Adds tasks based on the description as input by the user.
-  function addTask(description) {
-    const newTasks = [
-      ...tasks,
-      {
-        description: description,
-        isComplete: false,
-        dateCreated: firebase.firestore.Timestamp.now(),
-      },
-    ];
-
-    if (!description || /^\s*$/.test(description)) {
-      return;
-    }
-
-    setTasks(newTasks);
-  }
-
-  // Hook to watch for any changes in tasks. If there are changes,
-  // an update to our Firestore database will be dispatched.
   useEffect(() => {
-    //Optional chaining: "?." accounts for the case when currentUser is null.
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
     const docRef = db.collection("/users").doc(uid);
 
     docRef.get().then((doc) => {
       if (doc.exists) {
-        db.collection("/users").doc(uid).update({ tasks: tasks });
+        setTasksState(doc.data().tasks);
       } else {
-        db.collection("/users").doc(uid).set({ tasks: tasks });
-      }})    
-  }, [tasks]);
+        setTasksState([]);
+      }
+      // confirms that data has been loaded
+      setLoaded(true);
+    });
+  }, []);
 
-  const inputRef = useRef(null);
-
-  useEffect(() => {
-    inputRef.current.focus();
-  });
-
-  return (
-    <>
-      <div>
-        <h2>Add Tasks</h2>
-        <form onSubmit={handleAddTask}>
-          <Input
-            className="task-name-field"
-            style={{ marginRight: "1rem", paddingLeft: "3px" }}
-            placeholder="Enter Task Name"
-            value={newTaskText}
-            inputProps={{ "aria-label": "description" }}
-            // Ensures that the cursor is on the textfield when component loads
-            ref={inputRef}
-            onChange={(event) => setNewTaskText(event.target.value)}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            className="submit-button"
-            onClick={handleAddTask}
-          >
-            create task
-          </Button>
-        </form>
-      </div>
-
-      <div>
-        <h2>Task List</h2>
-        <TaskList tasks={tasks} setTasks={setTasks} />
-      </div>
-    </>
-  );
-}
-
-function TaskList(props) {
-  const { tasks, setTasks } = props;
-
-  // Toggles between completed and incomplete.
-  function handleTaskToggle(toggledTask, toggledTaskIndex) {
-    const newTasks = [
-      ...tasks.slice(0, toggledTaskIndex),
-      {
-        description: toggledTask.description,
-        isComplete: !toggledTask.isComplete,
-      },
-      ...tasks.slice(toggledTaskIndex + 1),
-    ];
-    setTasks(newTasks);
-  }
-
-  function handleDeleteTask(task, index) {
-    const uid = firebase.auth().currentUser?.uid;
-    const db = firebase.firestore();
-    //Add the deleted task into firestore
-    db.collection("/users").doc(uid).update({ history: firebase.firestore.FieldValue.arrayUnion(tasks[index])});
-    //Remove the task from local array
-    const newTask = [...tasks.slice(0, index), ...tasks.slice(index + 1)];
-    //Update array with new elements
-    setTasks(newTask);
-  }
-
-  if (tasks.length <= 0) {
-    return <p>Go and have fun for today!</p>;
-  } else {
+  // Before rendering the TaskManager component, the data has to be loaded first so that
+  // it does not push the wrong updates to firestore.
+  if (loaded) {
     return (
-      <table
-        style={{
-          margin: "0 auto",
-          width: "80%",
-          textAlign: "left",
-          float: "left",
-        }}
-      >
-        <thead>
-          <tr>
-            <th style={{ width: "8%", textAlign: "left" }}>No.</th>
-            <th style={{ width: "50%" }}>Task</th>
-            <th style={{ width: "5%" }}>Completed</th>
-            <th style={{ width: "5%" }}>Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tasks.map((task, index) => (
-            <tr key={index}>
-              <td style={{ textAlign: "left" }}>{index + 1}</td>
-              <td>{task.description}</td>
-              <td style={{ textAlign: "center" }}>
-                <input
-                  type="checkbox"
-                  checked={task.isComplete}
-                  onChange={() => handleTaskToggle(task, index)}
-                />  
-              </td>
-              <td style={{ textAlign: "center" }}>
-                <AiOutlineDelete
-                  onClick={() => handleDeleteTask(task, index)}
-                  className="delete-icon"
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <main>
+        <TaskForm tasks={task} setTasks={setTasks} />
+      </main>
     );
+  } else {
+    return null;
   }
 }
+
 export default TaskManager;
