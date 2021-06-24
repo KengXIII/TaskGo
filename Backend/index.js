@@ -14,8 +14,8 @@ app.post("/send_mail", cors(), async (req, res) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "taskgo.official@gmail.com",
-      pass: "guanweikengi",
+      user: "",
+      pass: "",
     },
   });
 

@@ -54,10 +54,10 @@ function TaskForm(props) {
       ...array.slice(0, index),
       {
         name: name,
-        //  priority: 1,
+        priority: 1,
         isComplete: false,
         dateCreated: firebase.firestore.Timestamp.now(),
-        //  dateCompleted: "",
+        dateCompleted: "",
         deadline: deadline,
         description: description,
       },

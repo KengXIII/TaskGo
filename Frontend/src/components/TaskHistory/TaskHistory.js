@@ -60,10 +60,10 @@ function TaskHistory(props) {
         ...array.slice(0, insertIndex),
         {
           name: array[index].name,
-          // priority: array[index].priority,
+          priority: array[index].priority,
           isComplete: false,
           dateCreated: array[index].dateCreated,
-          // dateCompleted: "",
+          dateCompleted: "",
           deadline: array[index].deadline,
           description: array[index].description,
         },

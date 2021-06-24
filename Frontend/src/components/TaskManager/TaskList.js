@@ -7,14 +7,9 @@ export default function TaskList(props) {
   const { history, setHistory, tasks, setTasks } = props;
 
   useEffect(() => {
-    console.log("tasks:" + tasks.length);
-    console.log("history:" + history.length);
-  });
-
-  useEffect(() => {
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
-    db.collection("/users").doc(uid).update({ history: history });
+    db.collection("/users").doc(uid).set({ history: history });
   }, [history]);
 
   useEffect(() => {
@@ -29,10 +24,10 @@ export default function TaskList(props) {
     const newHistory = [
       {
         name: tasks[toggledTaskIndex].name,
-        //priority: 1,
+        priority: 1,
         isComplete: true,
         dateCreated: tasks[toggledTaskIndex].dateCreated,
-        //dateCompleted: firebase.firestore.Timestamp.now(),
+        dateCompleted: firebase.firestore.Timestamp.now(),
         deadline: tasks[toggledTaskIndex].deadline,
         description: tasks[toggledTaskIndex].description,
       },
@@ -40,7 +35,6 @@ export default function TaskList(props) {
     ];
 
     setHistory(newHistory);
-    console.log("done");
 
     //Remove the task from local array
     const newTasks = [
@@ -49,6 +43,7 @@ export default function TaskList(props) {
     ];
     //Update array with new elements
     setTasks(newTasks);
+    console.log(history.length);
   }
 
   function handleDeleteTask(index) {
