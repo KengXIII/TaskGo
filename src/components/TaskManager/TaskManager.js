@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { firebase } from "@firebase/app";
 import TaskForm from "./TaskForm";
+import TaskList from "./TaskList";
 
 function TaskManager() {
   const [task, setTasksState] = useState([]);
@@ -32,7 +33,10 @@ function TaskManager() {
   if (loaded) {
     return (
       <main>
+        <h2>Add Tasks</h2>
         <TaskForm tasks={task} setTasks={setTasks} />
+        <h2>Task List</h2>
+        <TaskList tasks={task} setTasks={setTasks} />
       </main>
     );
   } else {

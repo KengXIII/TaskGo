@@ -1,9 +1,9 @@
 function Settings() {
-    return (
-        <div>
-            <strong>Settings</strong>
-        </div>
-    );
+  return (
+    <div>
+      <strong>Settings</strong>
+    </div>
+  );
 }
 
 export default Settings;
