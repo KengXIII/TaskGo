@@ -1,4 +1,4 @@
-import logo from "../components/Final Logo White.png";
+import logo from "../components/Others/Final Logo White.png";
 import "./homepage.css";
 import { Button } from "@material-ui/core";
 import { FirebaseAuthConsumer } from "@react-firebase/auth";
@@ -28,7 +28,7 @@ function Homepage() {
         <FirebaseAuthConsumer>
           {({ firebase }) => (
             <Button
-              style={{margin: '0 auto', display: "flex"}}
+              style={{ margin: "0 auto", display: "flex" }}
               className="login-button"
               variant="contained"
               color="primary"

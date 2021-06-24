@@ -4,12 +4,18 @@ import TaskForm from "./TaskForm";
 import TaskList from "./TaskList";
 
 function TaskManager() {
-  const [task, setTasksState] = useState([]);
+  const [tasks, setTasksState] = useState([]);
+  const [history, setHistoryState] = useState([]);
+
   // Boolean to check if data has been loaded from firestore
   const [loaded, setLoaded] = useState(false);
 
   function setTasks(newTasks) {
     setTasksState(newTasks);
+  }
+
+  function setHistory(newTasks) {
+    setHistoryState(newTasks);
   }
 
   useEffect(() => {
@@ -20,10 +26,11 @@ function TaskManager() {
     docRef.get().then((doc) => {
       if (doc.exists) {
         setTasksState(doc.data().tasks);
+        setHistoryState(doc.data().history);
       } else {
         setTasksState([]);
+        setHistoryState([]);
       }
-      // confirms that data has been loaded
       setLoaded(true);
     });
   }, []);
@@ -34,9 +41,14 @@ function TaskManager() {
     return (
       <main>
         <h2>Add Tasks</h2>
-        <TaskForm tasks={task} setTasks={setTasks} />
+        <TaskForm tasks={tasks} setTasks={setTasks} />
         <h2>Task List</h2>
-        <TaskList tasks={task} setTasks={setTasks} />
+        <TaskList
+          history={history}
+          setHistory={setHistory}
+          tasks={tasks}
+          setTasks={setTasks}
+        />
       </main>
     );
   } else {

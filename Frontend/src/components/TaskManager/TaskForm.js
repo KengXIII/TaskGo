@@ -13,23 +13,55 @@ function TaskForm(props) {
   function handleAddTask(event) {
     // Prevent browser refresh everytime the "Add Task" button is pressed.
     event.preventDefault();
-    addTask(newTaskName, newTaskDeadline, newTaskDescription);
+    addTask(newTaskName, newTaskDeadline, newTaskDescription, tasks);
     setNewTaskName("");
     setNewTaskDeadline("");
     setNewTaskDescription("");
   }
 
-  // Adds tasks based on the name as input by the user.
-  function addTask(name, deadline, description) {
+  // Adds tasks into input array.
+  function addTask(name, deadline, description, array) {
+    const insertionDeadline = new Date(deadline);
+
+    // This function determines the index of the task to be inserted. Does not work for array of size 0, so be careful.
+    function addTaskIndex(low, high) {
+      if (low >= high) {
+        if (insertionDeadline - new Date(array[low].deadline) > 0) {
+          return low + 1;
+        } else {
+          return low;
+        }
+      } else {
+        var mid = Math.floor((low + high) / 2);
+
+        if (insertionDeadline - new Date(array[mid].deadline) > 0) {
+          return addTaskIndex(mid + 1, high);
+        } else {
+          return addTaskIndex(low, mid);
+        }
+      }
+    }
+
+    var index;
+
+    if (array.length === 0) {
+      index = 0;
+    } else {
+      index = addTaskIndex(0, array.length - 1);
+    }
+
     const newTasks = [
-      ...tasks,
+      ...array.slice(0, index),
       {
         name: name,
+        //  priority: 1,
         isComplete: false,
         dateCreated: firebase.firestore.Timestamp.now(),
+        //  dateCompleted: "",
         deadline: deadline,
         description: description,
       },
+      ...array.slice(index),
     ];
 
     if (!name || /^\s*$/.test(name)) {
@@ -39,8 +71,7 @@ function TaskForm(props) {
     setTasks(newTasks);
   }
 
-  // Hook to watch for any changes in tasks. If there are changes,
-  // an update to our Firestore database will be dispatched.
+  // An update to our Firestore database will be dispatched.
   useEffect(() => {
     //Optional chaining: "?." accounts for the case when currentUser is null.
     const uid = firebase.auth().currentUser?.uid;
