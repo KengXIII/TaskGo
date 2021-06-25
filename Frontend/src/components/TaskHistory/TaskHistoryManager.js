@@ -39,6 +39,9 @@ function TaskHistoryManager() {
   if (loaded) {
     return (
       <main>
+        <h2>
+          <strong>Task History</strong>
+        </h2>
         <TaskHistory
           history={history}
           setHistory={setHistory}

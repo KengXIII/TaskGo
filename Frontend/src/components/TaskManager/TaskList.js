@@ -9,14 +9,8 @@ export default function TaskList(props) {
   useEffect(() => {
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
-    db.collection("/users").doc(uid).set({ history: history });
-  }, [history]);
-
-  useEffect(() => {
-    const uid = firebase.auth().currentUser?.uid;
-    const db = firebase.firestore();
-    db.collection("/users").doc(uid).update({ tasks: tasks });
-  }, [tasks]);
+    db.collection("/users").doc(uid).update({ tasks: tasks, history: history });
+  }, [tasks, history]);
 
   // Toggles between completed and incomplete.
   function handleTaskToggle(toggledTaskIndex) {
@@ -43,7 +37,6 @@ export default function TaskList(props) {
     ];
     //Update array with new elements
     setTasks(newTasks);
-    console.log(history.length);
   }
 
   function handleDeleteTask(index) {

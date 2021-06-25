@@ -7,16 +7,15 @@ function TaskHistory(props) {
   const { history, setHistory, tasks, setTasks } = props;
 
   useEffect(() => {
-    const uid = firebase.auth().currentUser?.uid;
-    const db = firebase.firestore();
-    db.collection("/users").doc(uid).update({ history: history });
-  }, [history]);
+    console.log(tasks.length);
+    console.log(history.length);
+  });
 
   useEffect(() => {
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
-    db.collection("/users").doc(uid).update({ tasks: tasks });
-  }, [tasks]);
+    db.collection("/users").doc(uid).set({ tasks: tasks, history: history });
+  }, [tasks, history]);
 
   function handleDeleteTask(index) {
     const newTask = [...history.slice(0, index), ...history.slice(index + 1)];
@@ -24,10 +23,10 @@ function TaskHistory(props) {
     setHistory(newTask);
   }
 
-  function handleRevert(index) {
+  function handleRevert(task, index) {
     // Adds tasks into input array.
     function addTask(array) {
-      const insertionDeadline = new Date(array[index].deadline);
+      const insertionDeadline = new Date(task.deadline);
 
       // This function determines the index of the task to be inserted. Does not work for array of size 0, so be careful.
       function addTaskIndex(low, high) {
@@ -59,13 +58,13 @@ function TaskHistory(props) {
       const newTasks = [
         ...array.slice(0, insertIndex),
         {
-          name: array[index].name,
-          priority: array[index].priority,
+          name: task.name,
+          priority: task.priority,
           isComplete: false,
-          dateCreated: array[index].dateCreated,
+          dateCreated: task.dateCreated,
           dateCompleted: "",
-          deadline: array[index].deadline,
-          description: array[index].description,
+          deadline: task.deadline,
+          description: task.description,
         },
         ...array.slice(insertIndex),
       ];
@@ -84,11 +83,10 @@ function TaskHistory(props) {
     setHistory(newHistory);
   }
 
-  return (
-    <div>
-      <p>
-        <strong>Task History</strong>
-      </p>
+  if (history.length <= 0) {
+    return "History is empty";
+  } else {
+    return (
       <div>
         <table
           style={{
@@ -119,7 +117,7 @@ function TaskHistory(props) {
                 </td>
                 <td>
                   <GrRevert
-                    onClick={() => handleRevert(index)}
+                    onClick={() => handleRevert(task, index)}
                     className="revert-icon"
                   />
                 </td>
@@ -128,8 +126,8 @@ function TaskHistory(props) {
           </tbody>
         </table>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 export default TaskHistory;
