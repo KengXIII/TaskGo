@@ -7,11 +7,6 @@ function TaskHistory(props) {
   const { history, setHistory, tasks, setTasks } = props;
 
   useEffect(() => {
-    console.log(tasks.length);
-    console.log(history.length);
-  });
-
-  useEffect(() => {
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
     db.collection("/users").doc(uid).set({ tasks: tasks, history: history });

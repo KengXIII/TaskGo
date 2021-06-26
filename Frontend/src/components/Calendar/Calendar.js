@@ -1,9 +1,9 @@
 function Calendar() {
-    return (
-        <div>
-            <strong>Calendar</strong>
-        </div>
-    );
+  return (
+    <div>
+      <h2>Calendar</h2>
+    </div>
+  );
 }
 
 export default Calendar;

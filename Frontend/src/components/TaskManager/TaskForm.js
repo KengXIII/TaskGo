@@ -3,6 +3,7 @@ import { firebase } from "@firebase/app";
 import "@firebase/firestore";
 import { Button, Input, Dialog, DialogTitle } from "@material-ui/core";
 import { VscDiffAdded } from "react-icons/vsc";
+import axios from "axios";
 
 function TaskForm(props) {
   const { tasks, setTasks } = props;
@@ -17,6 +18,19 @@ function TaskForm(props) {
     setNewTaskName("");
     setNewTaskDeadline("");
     setNewTaskDescription("");
+    sendMailReminder();
+  }
+
+  function sendMailReminder() {
+    axios
+      .post("http://localhost:4000/send_mail", {
+        taskName: newTaskName,
+        date: new Date(newTaskDeadline).toDateString(),
+        time: new Date(newTaskDeadline).toLocaleTimeString(),
+        name: firebase.auth().currentUser.displayName,
+        email: firebase.auth().currentUser.email,
+      })
+      .then(console.log("sent mail"));
   }
 
   // Adds tasks into input array.
