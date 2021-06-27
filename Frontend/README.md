@@ -15,15 +15,17 @@ Team ID: #2483
 
 Team Members: Phua Guan Wei & Liao Keng I 
 
-Team Advisor : Guo Ai
+Team Advisor: Guo Ai
 
 Targeted level of achievement: Apollo 11
+
+Project Application: https://task-go-kengxiii.vercel.app/
  
 ## Introduction
 There are so many tasks and assignments to keep track of, given that students have lots of modules to take. Some tasks are repetitive and easy to forget (weekly graded quizzes), while some tasks often take a long time and require students to start early  (weekly labs and problem sets).
 
 TaskGo is a web-based todo-list to help users keep track of all their tasks and provides notification when incomplete tasks are about to be due.
-The website that we designed is mainly for NUS students. As such, features like importing calendars from NUSMods are applicable to undergraduates only.
+The website that we designed is mainly for NUS students. As such, features like importing calendars from NUSMods are applicable to NUS undergraduates only.
 
 * Insert single and routine tasks
 * Create tags that users can assign tasks to
@@ -43,15 +45,18 @@ As a potential TaskGo user, we would want to:
 ## Scope of Functionalities
 ### Social login with Google
 Personalised to-do list, easily accessible through social login via Google. 
+We chose to implement social login via Google of its prevalence and popularity in Singapore. As such, issues such as forgetting passwords would be rather unlikely, due to the prevalent use of Google accounts in Singapore. Even if such an issue arises, it would be simple for users to solve this problem, as resetting Google account passwords is a simple and painless task.
 ### Task Handling
 Users can insert their tasks in TaskGo. There are 2 types of tasks that can be inserted - Regular and Routine. Users are then prompted on information about their tasks. They are:
 * Task name
 * Task frequency (For routine tasks only)
 * Deadline
+* Task description
 * Select category 
 * Level of priority
+
 Users can also mark their tasks as complete. The complete tasks are then stored under the ‘Completed Tasks’ tab, for up to 7 days by default. Users are able to change this default duration by going under the ‘Settings’ tab.
- 
+
 ### Task Sorting
 The tasks are sorted via a Priority System by default. The tasks in the overview page are then sorted by their priority -- Tasks with the highest priority level are placed at the top of the overview page.
 Users can also select to view their tasks, sorted via the deadlines -- Tasks with the closest deadline would be placed at the top of the page.
@@ -68,8 +73,11 @@ We integrated Google’s Firebase and Firestore into our React web-app. This wou
 The web-page and UI is developed using the ReactJS library and written in JSX. Formatting is done with CSS.
 ### Vercel
 We engaged Vercel as our platform to deploy and host our web-page. The site can be accessed at : https://task-go-kengxiii.vercel.app/ 
+### Heroku
+We engaged Heroko as our platform to deploy our back-end for E-mail notifications.
  
  ## Visuals
+ __Note: Our "Task Dashboard" and "Task History" looks different from these pictures. This is because these pictures show what we envision of the end-product, after merticulous styling is done to the various pages.__
 ### Program Flow
 ![1231 1](https://user-images.githubusercontent.com/77228324/120111688-7f091b80-c1a5-11eb-9674-a49c9dd85bb3.png)
 
@@ -97,5 +105,42 @@ NUSMods simply provides the users with the general lesson schedule. However, mor
 LumiNUS highlights the due dates of important submissions / tests, as entered by NUS Module Coordinators. However, some of these dates may not be accurate, and students themselves are unable to make edits and improvements onto such scheduling functionalities.
  
 ## Project Status
-We are working on the basic Create-Read-Update-Delete (CRUD) functionalities of a to-do list. Features that we intend to roll out in the next phase of the development includes a working backend server to handle notifications to users with tasks nearing deadline via Email, and an inbuilt-calendar to assist users to find available time amidst the busy schedule for their tasks.
+We have currently implemented almost all of our planned features for TaskGo. These implementations are not limited to:
+### Front-end
+* Most features completed for "Task Overview" and "Task History".
+    1. Basic Create-Read-Update-Delete (CRUD) functionalities of a to-do list.
+    2. Transferring completed tasks from "Task Overview" to "Task History" by marking tasks as "Completed".
+    3. Allowing users who mistakenly marked a task as "Completed" a chance to revert the mistake, through the "Revert" functionality in "Task History".
+    4. Using a pop-up form instead of a "Submit button" as implemented previously, allowing for more fields of information to be entered.
+    5. Certain fields in the form are marked as "Required" with a asterisk (*), the form would remind the users to enter "Required" fields if they are empty when the "Submit" button is hit. **!!**
+    6. Users cannot enter deadlines that are before the time of completion.  **!!**
+    7. Sorting of tasks is done by deadline in "Task Overview", and by time of completion in "Task History".
+### Back-end
+* Implementation of authentication system via Google. 
+* Setting up our database.
+    1. All of our tasks come with fields that are being queried through the "Add Task" form, every tasks in TaskGo currently possess these fields:
+        - Task Name
+        - Completed [Boolean]
+        - Date Created
+        - Date Completed
+        - Deadline
+        - Priority
+        - Task Description
+        - Frequency (For "Routine tasks" that are to be implemented in the future.)
+    2. Tasks that are created are specific to the user. We will never see the tasks from another person's TaskGo anymore.
+    3. Whenever tasks are added or deleted, these changes are constantly being updated  directly onto the database.
+* Launching of notification system via Heroku.
+    1. An e-mail will be sent as cron jobs whenever tasks are added. These e-mails will appear when the deadline is near, to remind the users of expiring tasks.
+    
+    _Note: Currently, this implementation is incomplete: For easy debugging, the version that is pushed sends a e-mail notification whenever tasks are created._
 
+### Future plans
+Features that we intend to roll out on our next phase of development would include: 
+* Rest of the features planned for our Task Overview and History.
+    1. Implementation of a Priority System.
+    2. Task categories.
+    3. Routine tasks. (The tasks that are available for creation currently only include "Regular tasks".)
+    4. Clearing of tasks in "Task History" after a certain duration as specified by the user.
+* An inbuilt-calendar to assist users to find available time amidst the busy schedule for their tasks.
+* Implementation of our Settings page, to give our users a more personalised experience when using TaskGo. 
+* Giving TaskGo more aesthetically pleasing details, such as the mobile version of the application, and also the styling of the tasks/layout of the dashboards. 
