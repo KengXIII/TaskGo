@@ -42,7 +42,9 @@ app.post("/send_mail", cors(), (req, res) => {
     //   user: process.env.USER,
     //   pass: process.env.PASS,
     // },
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
     auth: {
       type: "OAuth2",
       user: process.env.USER,
@@ -53,36 +55,35 @@ app.post("/send_mail", cors(), (req, res) => {
     },
   });
 
-  transporter.sendMail(
-    {
-      to: req.body.email,
-      subject: `Reminder: ${req.body.taskName} due soon...`,
-      html: `<div>
-        <h3>Dear ${req.body.name},</h3>
-        <br></br>
-        <body>The above mentioned task is due <label style="color:red">${req.body.date}</label> 
-              at <label style="color:red">${req.body.time}</label> </body>
-        <br></br>
-        <br></br>
-        <div>Regards,</div>
-        <div><h3>Team TaskGo</h3></div>
-        <img src="cid:email-signature" />
-      </div>`,
-      attachments: [
-        {
-          filename: "email-signature.png",
-          path: "./email-signature.png",
-          cid: "email-signature", //same cid value as in the html img src
-        },
-      ],
-    },
-    (error, info) => {
-      if (error) {
-        return console.log(error);
-      }
-      console.log("Message sent at: %s", info.messageId);
+  const mailOptions = {
+    to: req.body.email,
+    subject: `Reminder: ${req.body.taskName} due soon...`,
+    html: `<div>
+      <h3>Dear ${req.body.name},</h3>
+      <br></br>
+      <body>The above mentioned task is due <label style="color:red">${req.body.date}</label> 
+            at <label style="color:red">${req.body.time}</label> </body>
+      <br></br>
+      <br></br>
+      <div>Regards,</div>
+      <div><h3>Team TaskGo</h3></div>
+      <img src="cid:email-signature" />
+    </div>`,
+    attachments: [
+      {
+        filename: "email-signature.png",
+        path: "./email-signature.png",
+        cid: "email-signature", //same cid value as in the html img src
+      },
+    ],
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return console.log(error);
     }
-  );
+    console.log("Message sent at: %s", info.messageId);
+  });
 });
 
 app.listen(process.env.PORT, () => {
