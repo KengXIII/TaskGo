@@ -22,12 +22,14 @@ app.get("/", (req, res) => {
 });
 
 app.use((req, res, next) => {
-  res.setHeader(
+  res.header(
     "Access-Control-Allow-Origin",
     "https://task-go-kengxiii.vercel.app"
   );
-  res.setHeader("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,PATCH");
-
+  response.header(
+    "Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS"
+  );
+  response.header("Access-Control-Allow-Headers", "Content-Type");
   if (req.method === "OPTIONS") {
     res.writeHead(200);
     return res.end();
