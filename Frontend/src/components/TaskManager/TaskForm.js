@@ -30,7 +30,10 @@ function TaskForm(props) {
         name: firebase.auth().currentUser.displayName,
         email: firebase.auth().currentUser.email,
       })
-      .then(console.log("sent mail"));
+      .then((res) => {
+        res.status === 200 ? alert("Message sent!") : alert("Try again!");
+      })
+      .catch((err) => console.error(err));
   }
   //"http://localhost:4000/send_mail"
   // Adds tasks into input array.

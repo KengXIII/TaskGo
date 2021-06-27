@@ -5,20 +5,30 @@ require("dotenv").config();
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const nodemailer = require("nodemailer");
-const hbs = require("nodemailer-express-handlebars");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors());
-app.use(express.static("public"));
+//app.use(cors());
+
+app.use(
+  cors({
+    origin: "https://task-go-kengxiii.vercel.app/",
+    optionsSuccessStatus: 200,
+  })
+);
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.send("node is up!");
+});
 
 app.use((req, res, next) => {
   res.setHeader(
     "Access-Control-Allow-Origin",
-    "https://stark-plains-53456.herokuapp.com/"
+    "https://task-go-kengxiii.vercel.app/"
   );
   res.setHeader(
     "Access-Control-Request-Method",
-    "https://stark-plains-53456.herokuapp.com/"
+    "https://task-go-kengxiii.vercel.app/"
   );
   res.setHeader("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,PATCH");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -30,10 +40,6 @@ app.use((req, res, next) => {
   } else {
     return next();
   }
-});
-
-app.get("/", function (req, res) {
-  res.render("running...");
 });
 
 app.post("/send_mail", cors(), async (req, res) => {
