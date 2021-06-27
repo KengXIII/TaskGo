@@ -9,12 +9,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 
-// app.use(
-//   cors({
-//     origin: "https://task-go-kengxiii.vercel.app",
-//     optionsSuccessStatus: 200,
-//   })
-// );
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -35,20 +29,17 @@ app.use(function (req, res, next) {
 
 app.post("/send_mail", cors(), (req, res) => {
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
     auth: {
+      type: "OAuth2",
       user: process.env.USER,
-      pass: process.env.PASS,
+      clientId: process.env.CLIENTID,
+      clientSecret: process.env.CLIENTSECRET,
+      refreshToken: process.env.REFRESHTOKEN,
+      accessToken: process.env.ACCESSTOKEN,
     },
-    // service: "gmail",
-    // auth: {
-    //   type: "OAuth2",
-    //   user: process.env.USER,
-    //   clientId: process.env.CLIENTID,
-    //   clientSecret: process.env.CLIENTSECRET,
-    //   refreshToken: process.env.REFRESHTOKEN,
-    //   accessToken: process.env.ACCESSTOKEN,
-    // },
   });
 
   const mailOptions = {
