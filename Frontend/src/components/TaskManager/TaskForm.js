@@ -23,7 +23,6 @@ function TaskForm(props) {
 
   function sendMailReminder() {
     axios
-      //"http://localhost:4000/send_mail"
       .post("https://stark-plains-53456.herokuapp.com/send_mail", {
         taskName: newTaskName,
         date: new Date(newTaskDeadline).toDateString(),
@@ -33,7 +32,7 @@ function TaskForm(props) {
       })
       .then(console.log("sent mail"));
   }
-
+  //"http://localhost:4000/send_mail"
   // Adds tasks into input array.
   function addTask(name, deadline, description, array) {
     const insertionDeadline = new Date(deadline);
