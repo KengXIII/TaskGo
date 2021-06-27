@@ -42,9 +42,7 @@ app.post("/send_mail", cors(), (req, res) => {
     //   user: process.env.USER,
     //   pass: process.env.PASS,
     // },
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
+    service: "gmail",
     auth: {
       type: "OAuth2",
       user: process.env.USER,
