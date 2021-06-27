@@ -1,9 +1,11 @@
 {
-  "dependencies": {},
+  "dependencies": {
+    "googleapis": "^78.0.0"
+  },
   "devDependencies": {
     "concurrently": "^6.2.0"
   },
   "scripts": {
     "dev": "concurrently \"cd backend && yarn run dev\" \"cd frontend && yarn start\" "
-}
+  }
 }
