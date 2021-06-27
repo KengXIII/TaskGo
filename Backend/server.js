@@ -11,6 +11,7 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use(express.static("public"));
 
+<<<<<<< HEAD
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Request-Method", "*");
@@ -26,6 +27,8 @@ app.use((req, res, next) => {
   }
 });
 
+=======
+>>>>>>> 0bf2397d1bf16886210f7a6a0f92a308222bacca
 app.post("/send_mail", cors(), async (req, res) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
