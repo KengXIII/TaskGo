@@ -45,7 +45,7 @@ app.post("/send_mail", cors(), (req, res) => {
     service: "gmail",
     auth: {
       type: "OAuth2",
-      user: serverConfig.gmail.client_user,
+      user: process.env.USER,
       clientId: process.env.CLIENTID,
       clientSecret: process.env.CLIENTSECRET,
       refreshToken: process.env.REFRESHTOKEN,
