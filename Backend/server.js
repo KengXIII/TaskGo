@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 
 app.use(
   cors({
-    origin: "https://task-go-kengxiii.vercel.app/",
+    origin: "https://task-go-kengxiii.vercel.app/dashboard",
     optionsSuccessStatus: 200,
   })
 );
