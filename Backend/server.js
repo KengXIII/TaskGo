@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 
 app.use(
   cors({
-    origin: "https://task-go-kengxiii.vercel.app/",
+    origin: "https://task-go-kengxiii.vercel.app",
     optionsSuccessStatus: 200,
   })
 );
@@ -24,11 +24,11 @@ app.get("/", (req, res) => {
 app.use((req, res, next) => {
   res.setHeader(
     "Access-Control-Allow-Origin",
-    "https://task-go-kengxiii.vercel.app/"
+    "https://task-go-kengxiii.vercel.app"
   );
   res.setHeader(
     "Access-Control-Request-Method",
-    "https://task-go-kengxiii.vercel.app/"
+    "https://task-go-kengxiii.vercel.app"
   );
   res.setHeader("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,PATCH");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
