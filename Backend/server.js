@@ -32,6 +32,10 @@ app.use((req, res, next) => {
   }
 });
 
+app.get("/", function (req, res) {
+  res.render("running...");
+});
+
 app.post("/send_mail", cors(), async (req, res) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
