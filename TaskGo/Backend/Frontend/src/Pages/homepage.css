@@ -1,0 +1,32 @@
+.Homepage {
+  background-color: #282c34;
+  min-height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  flex-direction: column;
+}
+
+.Homepage-logo {
+  margin-top: 20vh;
+  height: 30vh;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.Homepage-header {
+  margin-top: 20px;
+  font-size: 20px;
+  color: white;
+  text-align: center;
+  letter-spacing: 1.5px;
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+@media screen and (max-width:480px) {
+  .Homepage-logo {
+    height: 12vmax;
+    margin-top: 20vh;
+    align-self: center;
+  }
+}

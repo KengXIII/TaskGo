@@ -1,0 +1,127 @@
+.Dashboard {
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  height: 100vh;
+}
+
+.AvatarPic {
+  height: 25vh;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  border-radius: 50%;
+}
+
+.Left {
+  height: 100%;
+  width: 20vw;
+  background-color: #323F52;
+  margin:0;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.Topbar {
+  width: 100%;
+  height: 12vh;
+  background-color:#282C34
+}
+
+.Content {
+  width: 100%;
+  height: 100%;
+  background-color: #F3F5F8;
+}
+
+.Content-body {
+  margin-left: 30px;
+}
+
+.Dashboard-body {
+  margin-top: 25px;
+}
+
+.Sidebar {
+  margin-top: 30px;
+}
+
+.SidebarList {
+  height: auto;
+  padding: 0;
+  width: 100%;
+}
+
+.SidebarList .row {
+  width: 100%;
+  height: 50px;
+  list-style-type: none;
+  margin: 0%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  color: lightgray;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.SidebarList .row:hover {
+  cursor: pointer;
+  background-color:#282C34;
+}
+
+/* .SidebarList #active {
+  cursor: pointer;
+  background-color:#648C8C;
+} */
+
+.row #icon {
+  flex: 35%;
+  display: grid;
+  place-items: center;
+}
+
+.row #title {
+  flex: 60%;
+}
+
+.todo-row {
+  display: flex;
+  align-items: center;
+  justify-content:space-between;
+  margin-right: 30vw;
+  align-items: left;
+  font-size: 20px;
+  color: black;
+  margin-top: 20px;
+  background-color:#fafafa;
+  height: 40px;
+  border: 2px solid #fafafa;
+  border-radius: 15px;
+  padding: 0 15px;
+}
+
+.scroll-list {
+  overflow-y: auto;
+  max-height: 50vh;
+  margin: 5px 0;
+}
+
+.username {
+  color: lightgray;
+  text-align: center;
+  margin: 15px 0;
+  font-size: x-large;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.changingContents {
+  margin: 25px;
+}
+
+
