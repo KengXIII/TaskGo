@@ -35,12 +35,21 @@ app.use(function (req, res, next) {
 
 app.post("/send_mail", cors(), (req, res) => {
   const transporter = nodemailer.createTransport({
+    // service: "gmail",
+    // port: 465,
+    // auth: {
+    //   type: "login",
+    //   user: process.env.USER,
+    //   pass: process.env.PASS,
+    // },
     service: "gmail",
-    port: 465,
     auth: {
-      type: "login",
-      user: process.env.USER,
-      pass: process.env.PASS,
+      type: "OAuth2",
+      user: serverConfig.gmail.client_user,
+      clientId: process.env.CLIENTID,
+      clientSecret: process.env.CLIENTSECRET,
+      refreshToken: process.env.REFRESHTOKEN,
+      accessToken: process.env.ACCESSTOKEN,
     },
   });
 
