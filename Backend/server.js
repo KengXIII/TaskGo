@@ -21,25 +21,31 @@ app.get("/", (req, res) => {
   res.send("yeap!");
 });
 
-app.use((req, res, next) => {
+app.use(function (req, res, next) {
+  // Website you wish to allow to connect
   res.setHeader(
     "Access-Control-Allow-Origin",
     "https://task-go-kengxiii.vercel.app"
   );
-  res.setHeader(
-    "Access-Control-Request-Method",
-    "https://task-go-kengxiii.vercel.app"
-  );
-  res.setHeader("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,PATCH");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  res.setHeader("Access-Control-Expose-Headers", "Content-Type");
 
-  if (req.method === "OPTIONS") {
-    res.writeHead(200);
-    return res.end();
-  } else {
-    return next();
-  }
+  // Request methods you wish to allow
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+  );
+
+  // Request headers you wish to allow
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "X-Requested-With,content-type"
+  );
+
+  // Set to true if you need the website to include cookies in the requests sent
+  // to the API (e.g. in case you use sessions)
+  res.setHeader("Access-Control-Allow-Credentials", true);
+
+  // Pass to next layer of middleware
+  next();
 });
 
 app.post("/send_mail", cors(), async (req, res) => {
