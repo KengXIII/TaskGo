@@ -23,7 +23,8 @@ function TaskForm(props) {
 
   function sendMailReminder() {
     axios
-      .post("http://localhost:4000/send_mail", {
+      //"http://localhost:4000/send_mail"
+      .post("https://stark-plains-53456.herokuapp.com/send_mail", {
         taskName: newTaskName,
         date: new Date(newTaskDeadline).toDateString(),
         time: new Date(newTaskDeadline).toLocaleTimeString(),
