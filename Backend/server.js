@@ -18,7 +18,7 @@ app.use(
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("node is up!");
+  res.send("yeap!");
 });
 
 app.use((req, res, next) => {
