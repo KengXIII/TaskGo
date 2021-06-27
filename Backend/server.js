@@ -36,7 +36,9 @@ app.use(function (req, res, next) {
 app.post("/send_mail", cors(), (req, res) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
+    port: 465,
     auth: {
+      type: "login",
       user: process.env.USER,
       pass: process.env.PASS,
     },
