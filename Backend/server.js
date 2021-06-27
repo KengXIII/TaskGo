@@ -7,45 +7,33 @@ const cors = require("cors");
 const nodemailer = require("nodemailer");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-//app.use(cors());
+app.use(cors());
 
-app.use(
-  cors({
-    origin: "https://task-go-kengxiii.vercel.app",
-    optionsSuccessStatus: 200,
-  })
-);
+// app.use(
+//   cors({
+//     origin: "https://task-go-kengxiii.vercel.app",
+//     optionsSuccessStatus: 200,
+//   })
+// );
 app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("yeap!");
 });
 
-app.use(function (req, res, next) {
-  // Website you wish to allow to connect
+app.use((req, res, next) => {
   res.setHeader(
     "Access-Control-Allow-Origin",
     "https://task-go-kengxiii.vercel.app"
   );
+  res.setHeader("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,PATCH");
 
-  // Request methods you wish to allow
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
-  );
-
-  // Request headers you wish to allow
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "X-Requested-With,content-type"
-  );
-
-  // Set to true if you need the website to include cookies in the requests sent
-  // to the API (e.g. in case you use sessions)
-  res.setHeader("Access-Control-Allow-Credentials", true);
-
-  // Pass to next layer of middleware
-  next();
+  if (req.method === "OPTIONS") {
+    res.writeHead(200);
+    return res.end();
+  } else {
+    return next();
+  }
 });
 
 app.post("/send_mail", cors(), async (req, res) => {
