@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { firebase } from "@firebase/app";
 import "@firebase/firestore";
-import { Button, Input, Dialog, DialogTitle } from "@material-ui/core";
+import {
+  Button,
+  Input,
+  Dialog,
+  DialogTitle,
+  TextField,
+} from "@material-ui/core";
 import { VscDiffAdded } from "react-icons/vsc";
 import axios from "axios";
 
@@ -143,9 +149,9 @@ function TaskForm(props) {
               marginRight: "10px",
             }}
           >
-            <p>Name</p>
-            <p>Deadline</p>
-            <p>Note</p>
+            <p>Name *</p>
+            <p>Deadline *</p>
+            <p>Description</p>
           </div>
 
           <form
@@ -158,6 +164,7 @@ function TaskForm(props) {
           >
             <Input
               // Input for the task name.
+              asterisk={true}
               required={true}
               autoFocus={true}
               className="task-name-field"
@@ -169,9 +176,11 @@ function TaskForm(props) {
               onChange={(event) => setNewTaskName(event.target.value)}
             />
             <br></br>
-            <Input
+            <TextField
               // Input for the deadline.
+              asterisk={true}
               required={true}
+              inputProps={{ min: new Date(Date.now()).toJSON().slice(0, 16) }}
               className="task-deadline-field"
               type="datetime-local"
               style={{ paddingLeft: "3px", width: "300px" }}

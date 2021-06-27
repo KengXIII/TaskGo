@@ -53,7 +53,7 @@ export default function TaskList(props) {
       <table
         style={{
           margin: "0 auto",
-          width: "90%",
+          width: "95%",
           textAlign: "left",
           float: "left",
         }}
@@ -62,8 +62,8 @@ export default function TaskList(props) {
           <tr>
             <th style={{ width: "5%", textAlign: "left" }}>No.</th>
             <th style={{ width: "25%" }}>Task</th>
-            <th style={{ width: "20%" }}>Deadline</th>
             <th style={{ width: "40%" }}>Description</th>
+            <th style={{ width: "15%" }}>Deadline</th>
             <th style={{ width: "5%" }}></th>
             <th style={{ width: "5%" }}></th>
           </tr>
@@ -73,8 +73,12 @@ export default function TaskList(props) {
             <tr key={index}>
               <td style={{ textAlign: "left" }}>{index + 1}</td>
               <td>{task.name}</td>
-              <td>{task.deadline}</td>
-              <td>{task.description}</td>
+              <td style={{ color: "darkblue" }}>{task.description}</td>
+              <td>{`${new Date(task.deadline).toDateString()},
+                    ${new Date(task.deadline).toLocaleTimeString().slice(0, 5)}
+                    ${new Date(task.deadline)
+                      .toLocaleTimeString()
+                      .slice(9)}`}</td>
               <td style={{ textAlign: "center" }}>
                 <TiTickOutline onClick={() => handleTaskToggle(index)} />
               </td>
