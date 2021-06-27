@@ -38,7 +38,13 @@ app.post("/send_mail", cors(), (req, res) => {
   oauth2Client.setCredentials({
     refresh_token: process.env.REFRESHTOKEN,
   });
-  const accessToken = oauth2Client.getAccessToken();
+  const accessToken = oauth2Client.getAccessToken((err, token) => {
+    if (err) {
+      console.log(err);
+    } else {
+      return token;
+    }
+  });
 
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
