@@ -1,7 +1,5 @@
 {
-  "dependencies": {
-    "googleapis": "^78.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "concurrently": "^6.2.0"
   },
