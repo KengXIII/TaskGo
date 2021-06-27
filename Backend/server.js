@@ -33,7 +33,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.post("/send_mail", cors(), async (req, res) => {
+app.post("/send_mail", cors(), (req, res) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -42,10 +42,11 @@ app.post("/send_mail", cors(), async (req, res) => {
     },
   });
 
-  await transporter.sendMail({
-    to: req.body.email,
-    subject: `Reminder: ${req.body.taskName} due soon...`,
-    html: `<div>
+  transporter.sendMail(
+    {
+      to: req.body.email,
+      subject: `Reminder: ${req.body.taskName} due soon...`,
+      html: `<div>
         <h3>Dear ${req.body.name},</h3>
         <br></br>
         <body>The above mentioned task is due <label style="color:red">${req.body.date}</label> 
@@ -56,14 +57,21 @@ app.post("/send_mail", cors(), async (req, res) => {
         <div><h3>Team TaskGo</h3></div>
         <img src="cid:email-signature" />
       </div>`,
-    attachments: [
-      {
-        filename: "email-signature.png",
-        path: "./email-signature.png",
-        cid: "email-signature", //same cid value as in the html img src
-      },
-    ],
-  });
+      attachments: [
+        {
+          filename: "email-signature.png",
+          path: "./email-signature.png",
+          cid: "email-signature", //same cid value as in the html img src
+        },
+      ],
+    },
+    (error, info) => {
+      if (error) {
+        return console.log(error);
+      }
+      console.log("Message sent at: %s", info.messageId);
+    }
+  );
 });
 
 app.listen(process.env.PORT, () => {
