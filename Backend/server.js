@@ -18,7 +18,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("yeap!");
+  res.send("Server Live!");
 });
 
 app.use(function (req, res, next) {
