@@ -70,7 +70,7 @@ export default function TaskList(props) {
         </thead>
         <tbody>
           {tasks.map((task, index) => (
-            <tr key={index}>
+            <tr key={index} className="scroll-list">
               <td style={{ textAlign: "left" }}>{index + 1}</td>
               <td>{task.name}</td>
               <td style={{ color: "darkblue" }}>{task.description}</td>

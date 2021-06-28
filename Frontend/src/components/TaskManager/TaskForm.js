@@ -32,8 +32,10 @@ function TaskForm(props) {
       .post("https://stark-plains-53456.herokuapp.com/send_mail", {
         taskName: newTaskName,
         date: new Date(newTaskDeadline).toDateString(),
-        time: `${new Date(newTaskDeadline).toLocaleTimeString().slice(0, 5)}
-                    ${new Date(newTaskDeadline).toLocaleTimeString().slice(9)}`,
+        time: `${new Date(newTaskDeadline).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}`,
         name: firebase.auth().currentUser.displayName,
         email: firebase.auth().currentUser.email,
       })
