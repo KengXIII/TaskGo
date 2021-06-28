@@ -16,6 +16,7 @@ function TaskForm(props) {
   const [newTaskName, setNewTaskName] = useState("");
   const [newTaskDeadline, setNewTaskDeadline] = useState("");
   const [newTaskDescription, setNewTaskDescription] = useState("");
+  var send = false;
 
   function handleAddTask(event) {
     // Prevent browser refresh everytime the "Add Task" button is pressed.
@@ -24,7 +25,13 @@ function TaskForm(props) {
     setNewTaskName("");
     setNewTaskDeadline("");
     setNewTaskDescription("");
-    sendMailReminder();
+    if (send) {
+      console.log("True!!!");
+      sendMailReminder();
+      send = false;
+    } else {
+      console.log("False!!!");
+    }
   }
 
   function sendMailReminder() {
@@ -92,8 +99,9 @@ function TaskForm(props) {
 
     if (!name || /^\s*$/.test(name)) {
       return;
+    } else {
+      send = true;
     }
-
     setTasks(newTasks);
   }
 
