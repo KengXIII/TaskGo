@@ -28,23 +28,23 @@ app.use(function (req, res, next) {
 });
 
 app.post("/send_mail", cors(), (req, res) => {
-  // const { google } = require("googleapis");
-  // const OAuth2 = google.auth.OAuth2;
-  // const oauth2Client = new OAuth2(
-  //   process.env.CLIENTID,
-  //   process.env.CLIENTSECRET,
-  //   "https://developers.google.com/oauthplayground"
-  // );
-  // oauth2Client.setCredentials({
-  //   refresh_token: process.env.REFRESHTOKEN,
-  // });
-  // const accessToken = oauth2Client.getAccessToken((err, token) => {
-  //   if (err) {
-  //     console.log(err);
-  //   } else {
-  //     return token;
-  //   }
-  // });
+  const { google } = require("googleapis");
+  const OAuth2 = google.auth.OAuth2;
+  const oauth2Client = new OAuth2(
+    process.env.CLIENTID,
+    process.env.CLIENTSECRET,
+    "https://developers.google.com/oauthplayground"
+  );
+  oauth2Client.setCredentials({
+    refresh_token: process.env.REFRESHTOKEN,
+  });
+  const accessToken = oauth2Client.getAccessToken((err, token) => {
+    if (err) {
+      console.log(err);
+    } else {
+      return token;
+    }
+  });
 
   const transporter = nodemailer.createTransport({
     // host: "smtp.gmail.com",
@@ -68,7 +68,7 @@ app.post("/send_mail", cors(), (req, res) => {
       clientId: process.env.CLIENTID,
       clientSecret: process.env.CLIENTSECRET,
       refreshToken: process.env.REFRESHTOKEN,
-      accessToken: process.env.ACCESSTOKEN,
+      accessToken: accessToken,
     },
   });
 
