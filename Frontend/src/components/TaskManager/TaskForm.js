@@ -150,9 +150,13 @@ function TaskForm(props) {
               marginRight: "10px",
             }}
           >
-            <p>Name *</p>
-            <p>Deadline *</p>
+            <p>
+              Name<label style={{ color: "red" }}>*</label>
+            </p>
             <p>Description</p>
+            <p>
+              Deadline<label style={{ color: "red" }}>*</label>
+            </p>
           </div>
 
           <form
@@ -177,6 +181,19 @@ function TaskForm(props) {
               onChange={(event) => setNewTaskName(event.target.value)}
             />
             <br></br>
+
+            <Input
+              // Input a short description for the task.
+              className="task-description"
+              type="text"
+              style={{ marginRight: "1rem", paddingLeft: "3px" }}
+              placeholder="Optional"
+              value={newTaskDescription}
+              inputProps={{ "aria-label": "description" }}
+              onChange={(event) => setNewTaskDescription(event.target.value)}
+            />
+            <br></br>
+
             <TextField
               // Input for the deadline.
               asterisk={true}
@@ -187,17 +204,6 @@ function TaskForm(props) {
               style={{ paddingLeft: "3px", width: "300px" }}
               value={newTaskDeadline}
               onChange={(event) => setNewTaskDeadline(event.target.value)}
-            />
-            <br></br>
-            <Input
-              // Input a short description for the task.
-              className="task-description"
-              type="text"
-              style={{ marginRight: "1rem", paddingLeft: "3px" }}
-              placeholder="Optional"
-              value={newTaskDescription}
-              inputProps={{ "aria-label": "description" }}
-              onChange={(event) => setNewTaskDescription(event.target.value)}
             />
             <br></br>
             <div

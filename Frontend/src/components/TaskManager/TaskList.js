@@ -75,10 +75,10 @@ export default function TaskList(props) {
               <td>{task.name}</td>
               <td style={{ color: "darkblue" }}>{task.description}</td>
               <td>{`${new Date(task.deadline).toDateString()},
-                    ${new Date(task.deadline).toLocaleTimeString().slice(0, 5)}
-                    ${new Date(task.deadline)
-                      .toLocaleTimeString()
-                      .slice(9)}`}</td>
+                    ${new Date(task.deadline).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}`}</td>
               <td style={{ textAlign: "center" }}>
                 <TiTickOutline onClick={() => handleTaskToggle(index)} />
               </td>

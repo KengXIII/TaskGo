@@ -47,20 +47,6 @@ app.post("/send_mail", cors(), (req, res) => {
   });
 
   const transporter = nodemailer.createTransport({
-    // host: "smtp.gmail.com",
-    // port: 465,
-    // secure: true,
-    // auth: {
-    //   type: "OAuth2",
-    //   user: process.env.USER,
-    //   clientId: process.env.CLIENTID,
-    //   clientSecret: process.env.CLIENTSECRET,
-    //   refreshToken: process.env.REFRESHTOKEN,
-    //   accessToken: accessToken,
-    // },
-    // tls: {
-    //   rejectUnauthorized: false,
-    // },
     service: "gmail",
     auth: {
       type: "OAuth2",
