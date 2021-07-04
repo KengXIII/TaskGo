@@ -21,39 +21,45 @@ function TaskForm(props) {
   function handleAddTask(event) {
     // Prevent browser refresh everytime the "Add Task" button is pressed.
     event.preventDefault();
-    addTask(newTaskName, newTaskDeadline, newTaskDescription, tasks);
+    const createTime = new Date(Date.now()).toISOString();
+    const taskId = firebase.auth().currentUser.uid + createTime;
+    addTask(newTaskName, newTaskDeadline, newTaskDescription, tasks, taskId);
     setNewTaskName("");
     setNewTaskDeadline("");
     setNewTaskDescription("");
     if (send) {
-      console.log("True!!!");
-      sendMailReminder();
+      sendMailReminder(taskId);
       send = false;
-    } else {
-      console.log("False!!!");
     }
   }
 
-  function sendMailReminder() {
+  function sendMailReminder(taskId) {
+    const dueDate = new Date(newTaskDeadline);
+    const emailPrior = 60 * 1000;
+    const emailDate = new Date(dueDate.getTime() - emailPrior);
     axios
-      .post("https://stark-plains-53456.herokuapp.com/send_mail", {
+      //.post("https://stark-plains-53456.herokuapp.com/send_mail", {
+      .post("http://localhost:4000/send_mail", {
         taskName: newTaskName,
-        date: new Date(newTaskDeadline).toDateString(),
-        time: `${new Date(newTaskDeadline).toLocaleTimeString([], {
+        date: dueDate.toDateString(),
+        time: `${dueDate.toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
         })}`,
         name: firebase.auth().currentUser.displayName,
         email: firebase.auth().currentUser.email,
+        emailTime: emailDate,
+        jobName: taskId,
       })
       .then((res) => {
         res.status === 200 ? alert("Message sent!") : alert("Try again!");
       })
       .catch((err) => console.error(err));
   }
-  //"http://localhost:4000/send_mail"
+  // use "http://localhost:4000/send_mail" for local development
+
   // Adds tasks into input array.
-  function addTask(name, deadline, description, array) {
+  function addTask(name, deadline, description, array, taskId) {
     const insertionDeadline = new Date(deadline);
 
     // This function determines the index of the task to be inserted. Does not work for array of size 0, so be careful.
@@ -93,6 +99,7 @@ function TaskForm(props) {
         dateCompleted: "",
         deadline: deadline,
         description: description,
+        jobName: taskId,
       },
       ...array.slice(index),
     ];
@@ -103,6 +110,7 @@ function TaskForm(props) {
       send = true;
     }
     setTasks(newTasks);
+    console.log(taskId);
   }
 
   // An update to our Firestore database will be dispatched.
@@ -179,7 +187,6 @@ function TaskForm(props) {
           >
             <Input
               // Input for the task name.
-              asterisk={true}
               required={true}
               autoFocus={true}
               className="task-name-field"
@@ -206,7 +213,6 @@ function TaskForm(props) {
 
             <TextField
               // Input for the deadline.
-              asterisk={true}
               required={true}
               inputProps={{ min: new Date(Date.now()).toJSON().slice(0, 16) }}
               className="task-deadline-field"

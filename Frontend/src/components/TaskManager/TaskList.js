@@ -1,4 +1,5 @@
 import firebase from "@firebase/app";
+import axios from "axios";
 import { useEffect } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { TiTickOutline } from "react-icons/ti";
@@ -14,7 +15,10 @@ export default function TaskList(props) {
 
   // Toggles between completed and incomplete.
   function handleTaskToggle(toggledTaskIndex) {
-    //Declare the task to be toggled
+    // Get the name of the cron job
+    const jobName = tasks[toggledTaskIndex].jobName;
+
+    //Add task at the front of array in history
     const newHistory = [
       {
         name: tasks[toggledTaskIndex].name,
@@ -37,6 +41,30 @@ export default function TaskList(props) {
     ];
     //Update array with new elements
     setTasks(newTasks);
+
+    // Cancel the cron email job
+    axios
+      .post("http://localhost:4000/cancel_mail", { jobName: jobName })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          // The request was made but no response was received
+          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+          // http.ClientRequest in node.js
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log("Error", error.message);
+        }
+      });
   }
 
   function handleDeleteTask(index) {
