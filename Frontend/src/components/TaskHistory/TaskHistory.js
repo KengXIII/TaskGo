@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { firebase } from "@firebase/app";
 import { AiOutlineDelete } from "react-icons/ai";
 import { GrRevert } from "react-icons/gr";
+import sendMailReminder from "../TaskManager/SendMail";
 
 function TaskHistory(props) {
   const { history, setHistory, tasks, setTasks } = props;
@@ -60,6 +61,7 @@ function TaskHistory(props) {
           dateCompleted: "",
           deadline: task.deadline,
           description: task.description,
+          jobName: task.jobName,
         },
         ...array.slice(insertIndex),
       ];
@@ -69,6 +71,7 @@ function TaskHistory(props) {
 
     // Inserting the task into tasks.
     addTask(tasks);
+    sendMailReminder(task.jobName, task.deadline, task.name);
 
     // Removing from history
     const newHistory = [

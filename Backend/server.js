@@ -96,6 +96,8 @@ app.post("/send_mail", cors(), (req, res) => {
       console.log("Message sent at: %s", info.messageId);
     });
   });
+  console.log("Job scheduled");
+  res.end();
 });
 
 app.post("/cancel_mail", (req, res) => {
@@ -103,7 +105,9 @@ app.post("/cancel_mail", (req, res) => {
     schedule.scheduledJobs[req.body.jobName].cancel();
     console.log("Success: Email cancelled");
   } catch (TypeError) {
-    console.log("Error: email already sent out");
+    console.log("Error: cron job not found");
+  } finally {
+    res.end();
   }
 });
 

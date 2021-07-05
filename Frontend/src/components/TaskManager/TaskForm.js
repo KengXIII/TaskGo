@@ -9,7 +9,7 @@ import {
   TextField,
 } from "@material-ui/core";
 import { VscDiffAdded } from "react-icons/vsc";
-import axios from "axios";
+import sendMailReminder from "./SendMail";
 
 function TaskForm(props) {
   const { tasks, setTasks } = props;
@@ -28,34 +28,34 @@ function TaskForm(props) {
     setNewTaskDeadline("");
     setNewTaskDescription("");
     if (send) {
-      sendMailReminder(taskId);
+      sendMailReminder(taskId, newTaskDeadline, newTaskName);
       send = false;
     }
   }
 
-  function sendMailReminder(taskId) {
-    const dueDate = new Date(newTaskDeadline);
-    const emailPrior = 60 * 1000;
-    const emailDate = new Date(dueDate.getTime() - emailPrior);
-    axios
-      //.post("https://stark-plains-53456.herokuapp.com/send_mail", {
-      .post("http://localhost:4000/send_mail", {
-        taskName: newTaskName,
-        date: dueDate.toDateString(),
-        time: `${dueDate.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        })}`,
-        name: firebase.auth().currentUser.displayName,
-        email: firebase.auth().currentUser.email,
-        emailTime: emailDate,
-        jobName: taskId,
-      })
-      .then((res) => {
-        res.status === 200 ? alert("Message sent!") : alert("Try again!");
-      })
-      .catch((err) => console.error(err));
-  }
+  // function sendMailReminder(taskId) {
+  //   const dueDate = new Date(newTaskDeadline);
+  //   const emailPrior = 60 * 1000;
+  //   const emailDate = new Date(dueDate.getTime() - emailPrior);
+  //   axios
+  //     //.post("https://stark-plains-53456.herokuapp.com/send_mail", {
+  //     .post("http://localhost:4000/send_mail", {
+  //       taskName: newTaskName,
+  //       date: dueDate.toDateString(),
+  //       time: `${dueDate.toLocaleTimeString([], {
+  //         hour: "2-digit",
+  //         minute: "2-digit",
+  //       })}`,
+  //       name: firebase.auth().currentUser.displayName,
+  //       email: firebase.auth().currentUser.email,
+  //       emailTime: emailDate,
+  //       jobName: taskId,
+  //     })
+  //     .then((res) => {
+  //       res.status === 200 ? alert("Message sent!") : alert("Try again!");
+  //     })
+  //     .catch((err) => console.error(err));
+  // }
   // use "http://localhost:4000/send_mail" for local development
 
   // Adds tasks into input array.
