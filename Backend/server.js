@@ -32,10 +32,10 @@ app.use(function (req, res, next) {
 });
 
 app.post("/send_mail", cors(), (req, res) => {
-  const jobName = req.body.jobName;
+  const taskId = req.body.taskId;
 
-  //Cron job is created. (Key: jobName, Entry: cronjob)
-  schedule.scheduleJob(jobName, req.body.emailTime, function () {
+  //Cron job is created. (Key: taskId, Entry: cronjob)
+  schedule.scheduleJob(taskId, req.body.emailTime, function () {
     const { google } = require("googleapis");
     const OAuth2 = google.auth.OAuth2;
     const oauth2Client = new OAuth2(
@@ -102,7 +102,7 @@ app.post("/send_mail", cors(), (req, res) => {
 
 app.post("/cancel_mail", (req, res) => {
   try {
-    schedule.scheduledJobs[req.body.jobName].cancel();
+    schedule.scheduledJobs[req.body.taskId].cancel();
     console.log("Success: Email cancelled");
   } catch (TypeError) {
     console.log("Error: cron job not found");

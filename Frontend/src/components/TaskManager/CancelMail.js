@@ -1,8 +1,8 @@
 import axios from "axios";
 
-export default function cancelMail(jobName) {
+export default function cancelMail(taskId) {
   axios
-    .post("http://localhost:4000/cancel_mail", { jobName: jobName })
+    .post("http://localhost:4000/cancel_mail", { taskId: taskId })
     .then((response) => {
       console.log(response);
     })

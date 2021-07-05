@@ -8,7 +8,10 @@ import {
   DialogTitle,
   TextField,
 } from "@material-ui/core";
-import { VscDiffAdded } from "react-icons/vsc";
+import Radio from "@material-ui/core/Radio";
+import { withStyles } from "@material-ui/core/styles";
+import { green, orange, red } from "@material-ui/core/colors";
+import { BiCalendarPlus } from "react-icons/bi";
 import sendMailReminder from "./SendMail";
 
 function TaskForm(props) {
@@ -16,50 +19,67 @@ function TaskForm(props) {
   const [newTaskName, setNewTaskName] = useState("");
   const [newTaskDeadline, setNewTaskDeadline] = useState("");
   const [newTaskDescription, setNewTaskDescription] = useState("");
+  const [newTaskPriority, setNewTaskPriority] = useState("3");
+  const [newTaskCategory, setNewTaskCategory] = useState("");
   var send = false;
+
+  // Creating our Coloured Radio buttons...
+  const P3Radio = withStyles({
+    root: {
+      color: green[400],
+      "&$checked": {
+        color: green[600],
+      },
+    },
+    checked: {},
+  })((P3props) => <Radio color="default" {...P3props} />);
+
+  const P2Radio = withStyles({
+    root: {
+      color: orange[400],
+      "&$checked": {
+        color: orange[600],
+      },
+    },
+    checked: {},
+  })((P2props) => <Radio color="default" {...P2props} />);
+
+  const P1Radio = withStyles({
+    root: {
+      color: red[400],
+      "&$checked": {
+        color: red[600],
+      },
+    },
+    checked: {},
+  })((P1props) => <Radio color="default" {...P1props} />);
 
   function handleAddTask(event) {
     // Prevent browser refresh everytime the "Add Task" button is pressed.
     event.preventDefault();
     const createTime = new Date(Date.now()).toISOString();
     const taskId = firebase.auth().currentUser.uid + createTime;
-    addTask(newTaskName, newTaskDeadline, newTaskDescription, tasks, taskId);
+    addTask(
+      newTaskName,
+      newTaskPriority,
+      newTaskDeadline,
+      newTaskDescription,
+      tasks,
+      taskId
+    );
     setNewTaskName("");
     setNewTaskDeadline("");
     setNewTaskDescription("");
+    setNewTaskPriority("3");
+    setNewTaskCategory("");
     if (send) {
       sendMailReminder(taskId, newTaskDeadline, newTaskName);
       send = false;
     }
   }
 
-  // function sendMailReminder(taskId) {
-  //   const dueDate = new Date(newTaskDeadline);
-  //   const emailPrior = 60 * 1000;
-  //   const emailDate = new Date(dueDate.getTime() - emailPrior);
-  //   axios
-  //     //.post("https://stark-plains-53456.herokuapp.com/send_mail", {
-  //     .post("http://localhost:4000/send_mail", {
-  //       taskName: newTaskName,
-  //       date: dueDate.toDateString(),
-  //       time: `${dueDate.toLocaleTimeString([], {
-  //         hour: "2-digit",
-  //         minute: "2-digit",
-  //       })}`,
-  //       name: firebase.auth().currentUser.displayName,
-  //       email: firebase.auth().currentUser.email,
-  //       emailTime: emailDate,
-  //       jobName: taskId,
-  //     })
-  //     .then((res) => {
-  //       res.status === 200 ? alert("Message sent!") : alert("Try again!");
-  //     })
-  //     .catch((err) => console.error(err));
-  // }
-  // use "http://localhost:4000/send_mail" for local development
-
   // Adds tasks into input array.
-  function addTask(name, deadline, description, array, taskId) {
+  function addTask(name, priority, deadline, description, array, taskId) {
     const insertionDeadline = new Date(deadline);
 
     // This function determines the index of the task to be inserted. Does not work for array of size 0, so be careful.
@@ -89,17 +109,24 @@ function TaskForm(props) {
       index = addTaskIndex(0, array.length - 1);
     }
 
+    var inputDescription;
+    if (!description || /^\s*$/.test(description)) {
+      inputDescription = "No description";
+    } else {
+      inputDescription = description;
+    }
+
     const newTasks = [
       ...array.slice(0, index),
       {
         name: name,
-        priority: 1,
+        priority: priority,
         isComplete: false,
         dateCreated: firebase.firestore.Timestamp.now(),
         dateCompleted: "",
         deadline: deadline,
-        description: description,
-        jobName: taskId,
+        description: inputDescription,
+        taskId: taskId,
       },
       ...array.slice(index),
     ];
@@ -110,7 +137,6 @@ function TaskForm(props) {
       send = true;
     }
     setTasks(newTasks);
-    console.log(taskId);
   }
 
   // An update to our Firestore database will be dispatched.
@@ -139,12 +165,21 @@ function TaskForm(props) {
     setNewTaskName("");
     setNewTaskDeadline("");
     setNewTaskDescription("");
+    setNewTaskPriority("3");
+    setNewTaskCategory("");
     setOpen(false);
   };
 
   return (
     <>
-      <VscDiffAdded size={30} onClick={handleClickOpen} />
+      <BiCalendarPlus
+        style={{
+          marginLeft: "30px",
+          cursor: "pointer",
+        }}
+        size={25}
+        onClick={handleClickOpen}
+      />
       <Dialog
         open={open}
         onClose={handleClose}
@@ -171,10 +206,16 @@ function TaskForm(props) {
             <p>
               Name<label style={{ color: "red" }}>*</label>
             </p>
-            <p>Description</p>
             <p>
               Deadline<label style={{ color: "red" }}>*</label>
             </p>
+            <p>
+              Priority<label style={{ color: "red" }}>*</label>
+            </p>
+            <p>
+              Category<label style={{ color: "red" }}>*</label>
+            </p>
+            <p>Description</p>
           </div>
 
           <form
@@ -199,6 +240,59 @@ function TaskForm(props) {
             />
             <br></br>
 
+            <TextField
+              // Input for the deadline.
+              required={true}
+              inputProps={{
+                min: new Date(Date.now() + 28800000).toJSON().slice(0, 16),
+              }}
+              className="task-deadline-field"
+              type="datetime-local"
+              style={{ paddingLeft: "3px", width: "300px" }}
+              value={newTaskDeadline}
+              onChange={(event) => setNewTaskDeadline(event.target.value)}
+            />
+            <br></br>
+            <div
+            // Priority is selected via 3 Radio buttons. Default selected radio is Priority 3 Radio.
+            >
+              <P1Radio
+                checked={newTaskPriority === "1"}
+                onClick={(event) => setNewTaskPriority(event.target.value)}
+                value="1"
+                name="radio-button"
+                inputProps={{ "aria-label": "Radio A" }}
+                size="small"
+              />
+              <P2Radio
+                checked={newTaskPriority === "2"}
+                onClick={(event) => setNewTaskPriority(event.target.value)}
+                value="2"
+                name="radio-button"
+                inputProps={{ "aria-label": "Radio B" }}
+                size="small"
+              />
+              <P3Radio
+                checked={newTaskPriority === "3"}
+                onClick={(event) => setNewTaskPriority(event.target.value)}
+                value="3"
+                name="radio-button"
+                inputProps={{ "aria-label": "Radio C" }}
+                size="small"
+              />
+            </div>
+            <br></br>
+            <Input
+              // Input a task category.
+              className="task-category"
+              type="text"
+              style={{ marginRight: "1rem", paddingLeft: "3px" }}
+              placeholder="Optional"
+              value={newTaskCategory}
+              inputProps={{ "aria-label": "description" }}
+              onChange={(event) => setNewTaskCategory(event.target.value)}
+            />
+            <br></br>
             <Input
               // Input a short description for the task.
               className="task-description"
@@ -208,18 +302,6 @@ function TaskForm(props) {
               value={newTaskDescription}
               inputProps={{ "aria-label": "description" }}
               onChange={(event) => setNewTaskDescription(event.target.value)}
-            />
-            <br></br>
-
-            <TextField
-              // Input for the deadline.
-              required={true}
-              inputProps={{ min: new Date(Date.now()).toJSON().slice(0, 16) }}
-              className="task-deadline-field"
-              type="datetime-local"
-              style={{ paddingLeft: "3px", width: "300px" }}
-              value={newTaskDeadline}
-              onChange={(event) => setNewTaskDeadline(event.target.value)}
             />
             <br></br>
             <div

@@ -61,7 +61,7 @@ function TaskHistory(props) {
           dateCompleted: "",
           deadline: task.deadline,
           description: task.description,
-          jobName: task.jobName,
+          taskId: task.taskId,
         },
         ...array.slice(insertIndex),
       ];
@@ -71,7 +71,7 @@ function TaskHistory(props) {
 
     // Inserting the task into tasks.
     addTask(tasks);
-    sendMailReminder(task.jobName, task.deadline, task.name);
+    sendMailReminder(task.taskId, task.deadline, task.name);
 
     // Removing from history
     const newHistory = [

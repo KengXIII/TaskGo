@@ -3,7 +3,7 @@ import { firebase } from "@firebase/app";
 
 export default function sendMailReminder(taskId, deadline, taskName) {
   const dueDate = new Date(deadline);
-  const emailPrior = 60 * 1000;
+  const emailPrior = 86400000;
   const emailDate = new Date(dueDate.getTime() - emailPrior);
   axios
     //.post("https://stark-plains-53456.herokuapp.com/send_mail", {
@@ -17,7 +17,7 @@ export default function sendMailReminder(taskId, deadline, taskName) {
       name: firebase.auth().currentUser.displayName,
       email: firebase.auth().currentUser.email,
       emailTime: emailDate,
-      jobName: taskId,
+      taskId: taskId,
     })
     .then((res) => {
       res.status === 200

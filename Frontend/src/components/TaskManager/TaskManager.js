@@ -40,9 +40,10 @@ function TaskManager() {
   if (loaded) {
     return (
       <main>
-        <h2>Add Tasks</h2>
-        <TaskForm tasks={tasks} setTasks={setTasks} />
-        <h2>Task List</h2>
+        <h2>
+          Task List
+          <TaskForm tasks={tasks} setTasks={setTasks} />
+        </h2>
         <TaskList
           history={history}
           setHistory={setHistory}
