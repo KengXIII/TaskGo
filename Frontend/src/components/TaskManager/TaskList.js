@@ -4,16 +4,51 @@ import { useEffect, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { BiMessageSquareDetail } from "react-icons/bi";
 import { TiTickOutline } from "react-icons/ti";
+import updateHistory from "../TaskHistory/updateHistory";
 import cancelMail from "./CancelMail";
+import TaskForm from "./TaskForm";
+import updateTasks from "./updateTasks";
 
-export default function TaskList(props) {
-  const { history, setHistory, tasks, setTasks } = props;
+export default function TaskList() {
+  const [history, setHistory] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [loaded, setLoaded] = useState(false);
 
+  // Global variables from Firebase
+  const uid = firebase.auth().currentUser?.uid;
+  const db = firebase.firestore();
+
+  // Accessing the collection and document for data
+  function fetchData() {
+    const docRef = db.collection("/users").doc(uid);
+    docRef.get().then((doc) => {
+      if (doc.exists) {
+        setTasks(doc.data().tasks);
+        setHistory(doc.data().history);
+      } else {
+        setTasks([]);
+        setHistory([]);
+      }
+    });
+  }
+
+  // Initial fetch data - run once only
   useEffect(() => {
-    const uid = firebase.auth().currentUser?.uid;
-    const db = firebase.firestore();
-    db.collection("/users").doc(uid).update({ tasks: tasks, history: history });
-  }, [tasks, history]);
+    fetchData();
+    setLoaded(true);
+  }, []);
+
+  // Periodic fetch data - every 1 sec
+  useEffect(() => {
+    const periodicRefresh = setInterval(() => {
+      fetchData();
+    }, 1000);
+    return () => clearInterval(periodicRefresh);
+  });
+
+  function syncTask(newTasks) {
+    setTasks(newTasks);
+  }
 
   // Toggles between completed and incomplete.
   function handleTaskToggle(toggledTaskIndex) {
@@ -36,6 +71,7 @@ export default function TaskList(props) {
     ];
 
     setHistory(newHistory);
+    updateHistory(history);
 
     //Remove the task from local array
     const newTasks = [
@@ -44,6 +80,7 @@ export default function TaskList(props) {
     ];
     //Update array with new elements
     setTasks(newTasks);
+    updateTasks(newTasks);
 
     // Cancel the cron email job
     cancelMail(taskId);
@@ -57,102 +94,115 @@ export default function TaskList(props) {
     const newTask = [...tasks.slice(0, index), ...tasks.slice(index + 1)];
     //Update array with new elements
     setTasks(newTask);
+    updateTasks(newTask);
   }
 
-  if (tasks.length <= 0) {
-    return <p>Go and have fun for today!</p>;
+  if (!loaded) {
+    return null;
   } else {
     return (
-      <div style={{ display: "flex", marginLeft: "auto", marginRight: "auto" }}>
-        <table
-          style={{
-            margin: "0 auto",
-            width: "100%",
-            textAlign: "left",
-            float: "left",
-            tableLayout: "fixed",
-            borderCollapse: "separate",
-            borderSpacing: "0 3px",
-          }}
-        >
-          <thead>
-            <tr>
-              <th style={{ width: "0.25%" }}></th>
-              <th style={{ width: "30%", paddingLeft: "5px" }}>Task</th>
-              <th style={{ width: "4%" }}></th>
-              <th style={{ width: "8%" }}>Category</th>
-              <th style={{ width: "9%" }}>Deadline</th>
-              <th style={{ width: "3%" }}></th>
-              <th style={{ width: "3%" }}></th>
-            </tr>
-          </thead>
-          <tbody>
-            {tasks.map((task, index) => (
-              <tr
-                style={
-                  new Date(task.deadline) < Date.now()
-                    ? { backgroundColor: "#ff7a7a50" }
-                    : {}
-                }
-                key={index}
-                className="scroll-list"
-              >
-                <td
-                  style={
-                    new Date(task.deadline) < Date.now()
-                      ? { backgroundColor: "#F3F5F8" }
-                      : task.priority === "1"
-                      ? { backgroundColor: "darkorange" }
-                      : task.priority === "2"
-                      ? { backgroundColor: "#ecd540" }
-                      : { backgroundColor: "limegreen" }
-                  }
-                ></td>
-                <td style={{ wordWrap: "break-word", paddingLeft: "5px" }}>
-                  {task.name}
-                </td>
-                <td style={{ textAlign: "center", cursor: "pointer" }}>
-                  <Tooltip
-                    title={task.description}
-                    interactive
-                    placement="right"
+      <main>
+        <h2>
+          Task List
+          <TaskForm tasks={tasks} setTasks={syncTask} />
+        </h2>
+        {tasks.length <= 0 ? (
+          <p>Go and have fun for today!</p>
+        ) : (
+          <div
+            style={{ display: "flex", marginLeft: "auto", marginRight: "auto" }}
+          >
+            <table
+              style={{
+                margin: "0 auto",
+                width: "100%",
+                textAlign: "left",
+                float: "left",
+                tableLayout: "fixed",
+                borderCollapse: "separate",
+                borderSpacing: "0 3px",
+              }}
+            >
+              <thead>
+                <tr>
+                  <th style={{ width: "0.25%" }}></th>
+                  <th style={{ width: "30%", paddingLeft: "5px" }}>Task</th>
+                  <th style={{ width: "4%" }}></th>
+                  <th style={{ width: "8%" }}>Category</th>
+                  <th style={{ width: "9%" }}>Deadline</th>
+                  <th style={{ width: "3%" }}></th>
+                  <th style={{ width: "3%" }}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {tasks.map((task, index) => (
+                  <tr
+                    style={
+                      new Date(task.deadline) < Date.now()
+                        ? { backgroundColor: "#ff7a7a50" }
+                        : {}
+                    }
+                    key={index}
+                    className="scroll-list"
                   >
-                    <Button>
-                      <BiMessageSquareDetail />
-                    </Button>
-                  </Tooltip>
-                </td>
-                <td
-                  style={{
-                    color: "darkblue",
-                    wordWrap: "break-word",
-                    paddingRight: "10px",
-                  }}
-                >
-                  {task.description}
-                </td>
-                <td>
-                  {`${new Date(task.deadline).toDateString().slice(0, 10)}
+                    <td
+                      style={
+                        new Date(task.deadline) < Date.now()
+                          ? { backgroundColor: "#F3F5F8" }
+                          : task.priority === "1"
+                          ? { backgroundColor: "darkorange" }
+                          : task.priority === "2"
+                          ? { backgroundColor: "#ecd540" }
+                          : { backgroundColor: "limegreen" }
+                      }
+                    ></td>
+                    <td style={{ wordWrap: "break-word", paddingLeft: "5px" }}>
+                      {task.name}
+                    </td>
+                    <td style={{ textAlign: "center", cursor: "pointer" }}>
+                      <Tooltip
+                        title={task.description}
+                        interactive
+                        placement="right"
+                      >
+                        <Button>
+                          <BiMessageSquareDetail />
+                        </Button>
+                      </Tooltip>
+                    </td>
+                    <td
+                      style={{
+                        color: "darkblue",
+                        wordWrap: "break-word",
+                        paddingRight: "10px",
+                      }}
+                    >
+                      {task.description}
+                    </td>
+                    <td>
+                      {`${new Date(task.deadline).toDateString().slice(0, 10)}
                   ${new Date(task.deadline).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}`}
-                </td>
+                    </td>
 
-                <td style={{ textAlign: "center", cursor: "pointer" }}>
-                  <TiTickOutline onClick={() => handleTaskToggle(index)} />
-                </td>
-                <td style={{ textAlign: "center", cursor: "pointer" }}>
-                  <AiOutlineDelete
-                    onClick={() => handleDeleteTask(index)}
-                    className="delete-icon"
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                    <td style={{ textAlign: "center", cursor: "pointer" }}>
+                      <TiTickOutline onClick={() => handleTaskToggle(index)} />
+                    </td>
+                    <td style={{ textAlign: "center", cursor: "pointer" }}>
+                      <AiOutlineDelete
+                        onClick={() => handleDeleteTask(index)}
+                        className="delete-icon"
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </main>
     );
   }
 }

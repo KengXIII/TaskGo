@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { firebase } from "@firebase/app";
 import "@firebase/firestore";
 import {
@@ -13,6 +13,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { green, orange, red } from "@material-ui/core/colors";
 import { BiCalendarPlus } from "react-icons/bi";
 import sendMailReminder from "./SendMail";
+import updateTasks from "./updateTasks";
 
 function TaskForm(props) {
   const { tasks, setTasks } = props;
@@ -122,7 +123,7 @@ function TaskForm(props) {
         name: name,
         priority: priority,
         isComplete: false,
-        dateCreated: firebase.firestore.Timestamp.now(),
+        dateCreated: new Date(Date.now()),
         dateCompleted: "",
         deadline: deadline,
         description: inputDescription,
@@ -137,23 +138,8 @@ function TaskForm(props) {
       send = true;
     }
     setTasks(newTasks);
+    updateTasks(newTasks);
   }
-
-  // An update to our Firestore database will be dispatched.
-  useEffect(() => {
-    //Optional chaining: "?." accounts for the case when currentUser is null.
-    const uid = firebase.auth().currentUser?.uid;
-    const db = firebase.firestore();
-    const docRef = db.collection("/users").doc(uid);
-
-    docRef.get().then((doc) => {
-      if (doc.exists) {
-        db.collection("/users").doc(uid).update({ tasks: tasks });
-      } else {
-        db.collection("/users").doc(uid).set({ tasks: tasks });
-      }
-    });
-  }, [tasks]);
 
   const [open, setOpen] = useState(false);
 

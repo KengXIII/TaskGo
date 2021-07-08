@@ -1,8 +1,6 @@
 import "./dashboard.css";
 import { Button } from "@material-ui/core";
 import Sidebar from "../components/Others/SideBar";
-import TaskManager from "../components/TaskManager/TaskManager";
-import TaskHistoryManager from "../components/TaskHistory/TaskHistoryManager";
 import { firebase } from "@firebase/app";
 import {
   BrowserRouter as Router,
@@ -13,6 +11,8 @@ import {
 import Settings from "../components/Settings/Settings";
 import Calendar from "../components/Calendar/Calendar";
 import Profile from "../components/Others/Profile";
+import TaskList from "../components/TaskManager/TaskList";
+import TaskHistory from "../components/TaskHistory/TaskHistory";
 
 function Dashboard() {
   return (
@@ -43,10 +43,10 @@ function Dashboard() {
                   <Redirect to="/dashboard" />
                 </Route>
                 <Route exact path="/dashboard">
-                  <TaskManager />
+                  <TaskList />
                 </Route>
                 <Route exact path="/task-history">
-                  <TaskHistoryManager />
+                  <TaskHistory />
                 </Route>
                 <Route exact path="/calendar">
                   <Calendar />
