@@ -5,6 +5,21 @@ const nodemailer = require("nodemailer");
 
 // Cron manager with dictionary of cron jobs
 const schedule = require("node-schedule");
+const cron = require("node-cron");
+
+// Firebase SDK
+var admin = require("firebase-admin");
+admin.initializeApp({
+  credential: admin.credential.cert({
+    project_id: process.env.PROJECTID,
+    private_key: process.env.PRIVATEKEY.replace(/\\n/g, "\n").replace(
+      /_/g,
+      " "
+    ),
+    client_email: process.env.CLIENTEMAIL,
+  }),
+  databaseURL: process.env.DATABASEURL,
+});
 
 // Server uses express.js
 const app = express();
@@ -109,6 +124,39 @@ app.post("/cancel_mail", (req, res) => {
   } finally {
     res.end();
   }
+});
+
+// Module used to clean up all user's history at 00:00hrs everyday
+var clearHistory = cron.schedule("* * * * *", function () {
+  console.log(
+    `Running daily history clean-up at ${new Date(Date.now()).toDateString()}\n`
+  );
+  var db = admin.firestore();
+  db.collection("/users")
+    .get()
+    .then(
+      (querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          console.log(doc.id);
+          var history = doc.data().history;
+          var current = new Date();
+          var newHistory = history.filter(
+            (task) => current - 604800000 < task.dateCompleted.toDate()
+          );
+          var originalLength = history.length;
+          var newLength = newHistory.length;
+          var numberRemoved = originalLength - newLength;
+          if (numberRemoved > 0) {
+            console.log(`***${numberRemoved} task(s) removed from history***`);
+          }
+          doc.ref.update({ history: newHistory });
+        });
+      },
+      (err) => {
+        console.log(`Encountered error: ${err}`);
+      }
+    )
+    .then(() => console.log(`\ndaily history clean-up finished`));
 });
 
 // For local development

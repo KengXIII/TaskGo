@@ -10,106 +10,105 @@ function TaskHistory() {
   const [history, setHistory] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [loaded, setLoaded] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   const uid = firebase.auth().currentUser?.uid;
   const db = firebase.firestore();
 
-  function getData() {
-    const docRef = db.collection("/users").doc(uid);
-    docRef.get().then((doc) => {
-      if (doc.exists) {
-        setTasks(doc.data().tasks);
-        setHistory(doc.data().history);
-      } else {
-        setTasks([]);
-        setHistory([]);
-      }
-    });
-  }
-
-  // Initial fetch data - run once only
+  // Listen for updates in our database
   useEffect(() => {
-    getData();
+    const docRef = db.collection("/users").doc(uid);
+    docRef.onSnapshot((doc) => {
+      setTasks(doc.data().tasks);
+      setHistory(doc.data().history);
+    });
     setLoaded(true);
   }, []);
 
-  // Periodic fetch data - every 1 sec
-  useEffect(() => {
-    const periodicRefresh = setInterval(() => {
-      getData();
-    }, 1000);
-    return () => clearInterval(periodicRefresh);
-  });
-
   function handleDeleteTask(index) {
-    const newTask = [...history.slice(0, index), ...history.slice(index + 1)];
-
-    setHistory(newTask);
-    updateHistory(newTask);
+    if (busy) {
+      console.log("lagged");
+      window.setTimeout(handleDeleteTask, 50);
+    } else {
+      setBusy(true);
+      console.log("task started");
+      const newTask = [...history.slice(0, index), ...history.slice(index + 1)];
+      setHistory(newTask);
+      updateHistory(newTask);
+      setBusy(false);
+      console.log("task ended");
+    }
   }
 
   function handleRevert(task, index) {
-    // Adds tasks into input array.
-    function addTask(array) {
-      const insertionDeadline = new Date(task.deadline);
-
-      // This function determines the index of the task to be inserted. Does not work for array of size 0, so be careful.
-      function addTaskIndex(low, high) {
-        if (low >= high) {
-          if (insertionDeadline - new Date(array[low].deadline) > 0) {
-            return low + 1;
+    if (busy) {
+      console.log("lagged");
+      window.setTimeout(handleRevert, 50);
+    } else {
+      setBusy(true);
+      console.log("task started");
+      // Adds tasks into input array.
+      function addTask(array) {
+        // This function determines the index of the task to be inserted. Does not work for array of size 0, so be careful.
+        function addTaskIndex(low, high) {
+          if (low >= high) {
+            if (task.deadline - array[low].deadline > 0) {
+              return low + 1;
+            } else {
+              return low;
+            }
           } else {
-            return low;
-          }
-        } else {
-          var mid = Math.floor((low + high) / 2);
+            var mid = Math.floor((low + high) / 2);
 
-          if (insertionDeadline - new Date(array[mid].deadline) > 0) {
-            return addTaskIndex(mid + 1, high);
-          } else {
-            return addTaskIndex(low, mid);
+            if (task.deadline - array[mid].deadline > 0) {
+              return addTaskIndex(mid + 1, high);
+            } else {
+              return addTaskIndex(low, mid);
+            }
           }
         }
+
+        var insertIndex;
+
+        if (array.length === 0) {
+          insertIndex = 0;
+        } else {
+          insertIndex = addTaskIndex(0, array.length - 1);
+        }
+
+        const newTasks = [
+          ...array.slice(0, insertIndex),
+          {
+            name: task.name,
+            priority: task.priority,
+            isComplete: false,
+            dateCreated: task.dateCreated,
+            dateCompleted: "",
+            deadline: task.deadline,
+            description: task.description,
+            taskId: task.taskId,
+          },
+          ...array.slice(insertIndex),
+        ];
+
+        setTasks(newTasks);
+        updateTasks(newTasks);
       }
 
-      var insertIndex;
+      // Inserting the task into tasks.
+      addTask(tasks);
+      sendMailReminder(task.taskId, task.deadline, task.name);
 
-      if (array.length === 0) {
-        insertIndex = 0;
-      } else {
-        insertIndex = addTaskIndex(0, array.length - 1);
-      }
-
-      const newTasks = [
-        ...array.slice(0, insertIndex),
-        {
-          name: task.name,
-          priority: task.priority,
-          isComplete: false,
-          dateCreated: task.dateCreated,
-          dateCompleted: "",
-          deadline: task.deadline,
-          description: task.description,
-          taskId: task.taskId,
-        },
-        ...array.slice(insertIndex),
+      // Removing from history
+      const newHistory = [
+        ...history.slice(0, index),
+        ...history.slice(index + 1),
       ];
-
-      setTasks(newTasks);
-      updateTasks(newTasks);
+      setHistory(newHistory);
+      updateHistory(newHistory);
+      setBusy(false);
+      console.log("task ended");
     }
-
-    // Inserting the task into tasks.
-    addTask(tasks);
-    sendMailReminder(task.taskId, task.deadline, task.name);
-
-    // Removing from history
-    const newHistory = [
-      ...history.slice(0, index),
-      ...history.slice(index + 1),
-    ];
-    setHistory(newHistory);
-    updateHistory(newHistory);
   }
 
   if (!loaded) {

@@ -6,10 +6,6 @@ export default function updateTasks(tasks) {
   const docRef = db.collection("/users").doc(uid);
 
   docRef.get().then((doc) => {
-    if (doc.exists) {
-      db.collection("/users").doc(uid).update({ tasks: tasks });
-    } else {
-      db.collection("/users").doc(uid).set({ tasks: tasks });
-    }
+    docRef.update({ tasks: tasks });
   });
 }

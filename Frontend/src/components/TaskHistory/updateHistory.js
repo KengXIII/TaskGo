@@ -6,10 +6,6 @@ export default function updateHistory(newHistory) {
   const docRef = db.collection("/users").doc(uid);
 
   docRef.get().then((doc) => {
-    if (doc.exists) {
-      db.collection("/users").doc(uid).update({ history: newHistory });
-    } else {
-      db.collection("/users").doc(uid).set({ history: newHistory });
-    }
+    docRef.update({ history: newHistory });
   });
 }

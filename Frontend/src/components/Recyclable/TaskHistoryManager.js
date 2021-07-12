@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { firebase } from "@firebase/app";
-import TaskHistory from "./TaskHistory";
+import TaskHistory from "../TaskHistory/TaskHistory";
 
 function TaskHistoryManager() {
   const [tasks, setTasksState] = useState([]);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { firebase } from "@firebase/app";
 import "@firebase/firestore";
 import {
@@ -15,14 +15,23 @@ import { BiCalendarPlus } from "react-icons/bi";
 import sendMailReminder from "./SendMail";
 import updateTasks from "./updateTasks";
 
-function TaskForm(props) {
-  const { tasks, setTasks } = props;
+function TaskForm() {
+  const [tasks, setTasks] = useState([]);
   const [newTaskName, setNewTaskName] = useState("");
   const [newTaskDeadline, setNewTaskDeadline] = useState("");
   const [newTaskDescription, setNewTaskDescription] = useState("");
   const [newTaskPriority, setNewTaskPriority] = useState("3");
   const [newTaskCategory, setNewTaskCategory] = useState("");
   var send = false;
+
+  useEffect(() => {
+    const uid = firebase.auth().currentUser?.uid;
+    const db = firebase.firestore();
+    const docRef = db.collection("/users").doc(uid);
+    docRef.onSnapshot((doc) => {
+      setTasks(doc.data().tasks);
+    });
+  }, []);
 
   // Creating our Coloured Radio buttons...
   const P3Radio = withStyles({
@@ -58,7 +67,7 @@ function TaskForm(props) {
   function handleAddTask(event) {
     // Prevent browser refresh everytime the "Add Task" button is pressed.
     event.preventDefault();
-    const createTime = new Date(Date.now()).toISOString();
+    const createTime = new Date().toISOString();
     const taskId = firebase.auth().currentUser.uid + createTime;
     addTask(
       newTaskName,
@@ -86,7 +95,7 @@ function TaskForm(props) {
     // This function determines the index of the task to be inserted. Does not work for array of size 0, so be careful.
     function addTaskIndex(low, high) {
       if (low >= high) {
-        if (insertionDeadline - new Date(array[low].deadline) > 0) {
+        if (insertionDeadline - array[low].deadline > 0) {
           return low + 1;
         } else {
           return low;
@@ -94,7 +103,7 @@ function TaskForm(props) {
       } else {
         var mid = Math.floor((low + high) / 2);
 
-        if (insertionDeadline - new Date(array[mid].deadline) > 0) {
+        if (insertionDeadline - array[mid].deadline > 0) {
           return addTaskIndex(mid + 1, high);
         } else {
           return addTaskIndex(low, mid);
@@ -123,9 +132,9 @@ function TaskForm(props) {
         name: name,
         priority: priority,
         isComplete: false,
-        dateCreated: new Date(Date.now()),
+        dateCreated: new Date(),
         dateCompleted: "",
-        deadline: deadline,
+        deadline: insertionDeadline,
         description: inputDescription,
         taskId: taskId,
       },
@@ -198,9 +207,7 @@ function TaskForm(props) {
             <p>
               Priority<label style={{ color: "red" }}>*</label>
             </p>
-            <p>
-              Category<label style={{ color: "red" }}>*</label>
-            </p>
+            <p>Category</p>
             <p>Description</p>
           </div>
 

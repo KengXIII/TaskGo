@@ -7,7 +7,21 @@ import AccountBox from "@material-ui/icons/AccountBox";
 function Homepage() {
   const handleGoogleSignIn = (firebase) => {
     const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(googleAuthProvider);
+    firebase
+      .auth()
+      .signInWithPopup(googleAuthProvider)
+      .then(() => {
+        const uid = firebase.auth().currentUser?.uid;
+        const db = firebase.firestore();
+        const docRef = db.collection("/users").doc(uid);
+        docRef.get().then((doc) => {
+          if (!doc.exists) {
+            db.collection("/users")
+              .doc(uid)
+              .set({ tasks: [], history: [], categories: [] });
+          }
+        });
+      });
   };
 
   return (

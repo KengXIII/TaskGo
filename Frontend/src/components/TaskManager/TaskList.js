@@ -2,7 +2,7 @@ import firebase from "@firebase/app";
 import { Button, Tooltip } from "@material-ui/core";
 import { useEffect, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
-import { BiMessageSquareDetail } from "react-icons/bi";
+import { BiMessageSquareDetail, BiSort } from "react-icons/bi";
 import { TiTickOutline } from "react-icons/ti";
 import updateHistory from "../TaskHistory/updateHistory";
 import cancelMail from "./CancelMail";
@@ -13,88 +13,102 @@ export default function TaskList() {
   const [history, setHistory] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [loaded, setLoaded] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [sort, sortMode] = useState(false);
 
   // Global variables from Firebase
   const uid = firebase.auth().currentUser?.uid;
   const db = firebase.firestore();
 
-  // Accessing the collection and document for data
-  function fetchData() {
-    const docRef = db.collection("/users").doc(uid);
-    docRef.get().then((doc) => {
-      if (doc.exists) {
-        setTasks(doc.data().tasks);
-        setHistory(doc.data().history);
-      } else {
-        setTasks([]);
-        setHistory([]);
-      }
-    });
-  }
-
-  // Initial fetch data - run once only
+  // Realtime data from firestore
   useEffect(() => {
-    fetchData();
+    const docRef = db.collection("/users").doc(uid);
+    docRef.onSnapshot((doc) => {
+      setTasks(doc.data().tasks);
+      setHistory(doc.data().history);
+    });
     setLoaded(true);
   }, []);
 
-  // Periodic fetch data - every 1 sec
-  useEffect(() => {
-    const periodicRefresh = setInterval(() => {
-      fetchData();
-    }, 1000);
-    return () => clearInterval(periodicRefresh);
-  });
-
-  function syncTask(newTasks) {
-    setTasks(newTasks);
-  }
+  const handleSort = () => {
+    sortMode(!sort);
+    console.log(sort);
+    if (sort) {
+      const byPriority = tasks.sort((task1, task2) => {
+        return task1.priority - task2.priority;
+      });
+      setTasks(byPriority);
+    } else {
+      const byDeadline = tasks.sort((task1, task2) => {
+        return task1.deadline - task2.deadline;
+      });
+      setTasks(byDeadline);
+    }
+  };
 
   // Toggles between completed and incomplete.
   function handleTaskToggle(toggledTaskIndex) {
-    // Get the name of the cron job
-    const taskId = tasks[toggledTaskIndex].taskId;
+    if (busy) {
+      console.log("lagged");
+      window.setTimeout(handleTaskToggle, 50);
+    } else {
+      setBusy(true);
+      console.log("task started");
+      // Get the name of the cron job
+      const taskId = tasks[toggledTaskIndex].taskId;
 
-    //Add task at the front of array in history
-    const newHistory = [
-      {
-        name: tasks[toggledTaskIndex].name,
-        priority: tasks[toggledTaskIndex].priority,
-        isComplete: true,
-        dateCreated: tasks[toggledTaskIndex].dateCreated,
-        dateCompleted: firebase.firestore.Timestamp.now(),
-        deadline: tasks[toggledTaskIndex].deadline,
-        description: tasks[toggledTaskIndex].description,
-        taskId: tasks[toggledTaskIndex].taskId,
-      },
-      ...history.slice(0),
-    ];
+      //Add task at the front of array in history
+      const newHistory = [
+        {
+          name: tasks[toggledTaskIndex].name,
+          priority: tasks[toggledTaskIndex].priority,
+          isComplete: true,
+          dateCreated: tasks[toggledTaskIndex].dateCreated,
+          dateCompleted: new Date(),
+          deadline: tasks[toggledTaskIndex].deadline,
+          description: tasks[toggledTaskIndex].description,
+          taskId: tasks[toggledTaskIndex].taskId,
+        },
+        ...history.slice(0),
+      ];
 
-    setHistory(newHistory);
-    updateHistory(history);
+      setHistory(newHistory);
+      updateHistory(newHistory);
 
-    //Remove the task from local array
-    const newTasks = [
-      ...tasks.slice(0, toggledTaskIndex),
-      ...tasks.slice(toggledTaskIndex + 1),
-    ];
-    //Update array with new elements
-    setTasks(newTasks);
-    updateTasks(newTasks);
+      //Remove the task from local array
+      const newTasks = [
+        ...tasks.slice(0, toggledTaskIndex),
+        ...tasks.slice(toggledTaskIndex + 1),
+      ];
+      //Update array with new elements
+      setTasks(newTasks);
+      updateTasks(newTasks);
 
-    // Cancel the cron email job
-    cancelMail(taskId);
+      // Cancel the cron email job
+      cancelMail(taskId);
+      setBusy(false);
+      console.log("task ended");
+    }
   }
 
   function handleDeleteTask(index) {
-    // Cancel Mail
-    cancelMail(tasks[index].taskId);
+    if (busy) {
+      console.log("lagged");
+      window.setTimeout(handleDeleteTask, 50);
+    } else {
+      setBusy(true);
+      console.log("task started");
+      // Cancel Mail
+      cancelMail(tasks[index].taskId);
 
-    //Remove the task from local array
-    const newTask = [...tasks.slice(0, index), ...tasks.slice(index + 1)];
-    //Update array with new elements
-    setTasks(newTask);
-    updateTasks(newTask);
+      //Remove the task from local array
+      const newTask = [...tasks.slice(0, index), ...tasks.slice(index + 1)];
+      //Update array with new elements
+      setTasks(newTask);
+      updateTasks(newTask);
+      setBusy(false);
+      console.log("task ended");
+    }
   }
 
   if (!loaded) {
@@ -104,8 +118,13 @@ export default function TaskList() {
       <main>
         <h2>
           Task List
-          <TaskForm tasks={tasks} setTasks={syncTask} />
+          <TaskForm />
         </h2>
+
+        <div>
+          <BiSort onClick={handleSort} />
+        </div>
+
         {tasks.length <= 0 ? (
           <p>Go and have fun for today!</p>
         ) : (
@@ -138,7 +157,7 @@ export default function TaskList() {
                 {tasks.map((task, index) => (
                   <tr
                     style={
-                      new Date(task.deadline) < Date.now()
+                      task.deadline.toDate() < new Date()
                         ? { backgroundColor: "#ff7a7a50" }
                         : {}
                     }
@@ -147,7 +166,7 @@ export default function TaskList() {
                   >
                     <td
                       style={
-                        new Date(task.deadline) < Date.now()
+                        task.deadline.toDate() < new Date()
                           ? { backgroundColor: "#F3F5F8" }
                           : task.priority === "1"
                           ? { backgroundColor: "darkorange" }
@@ -180,8 +199,8 @@ export default function TaskList() {
                       {task.description}
                     </td>
                     <td>
-                      {`${new Date(task.deadline).toDateString().slice(0, 10)}
-                  ${new Date(task.deadline).toLocaleTimeString([], {
+                      {`${task.deadline.toDate().toDateString().slice(0, 10)}
+                  ${task.deadline.toDate().toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}`}

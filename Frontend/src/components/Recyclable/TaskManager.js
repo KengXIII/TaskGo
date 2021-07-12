@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { firebase } from "@firebase/app";
-import TaskForm from "./TaskForm";
-import TaskList from "./TaskList";
+import TaskForm from "../TaskManager/TaskForm";
+import TaskList from "../TaskManager/TaskList";
 
 function TaskManager() {
   const [tasks, setTasksState] = useState([]);
