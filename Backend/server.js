@@ -127,7 +127,7 @@ app.post("/cancel_mail", (req, res) => {
 });
 
 // Module used to clean up all user's history at 00:00hrs everyday
-var clearHistory = cron.schedule("* * * * *", function () {
+var clearHistory = cron.schedule("0 0 0 * * *", function () {
   console.log(
     `Running daily history clean-up at ${new Date(Date.now()).toDateString()}\n`
   );

@@ -14,7 +14,7 @@ export default function TaskList() {
   const [tasks, setTasks] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [sort, sortMode] = useState(false);
+  const [sort, sortMode] = useState("deadline");
 
   // Global variables from Firebase
   const uid = firebase.auth().currentUser?.uid;
@@ -24,21 +24,63 @@ export default function TaskList() {
   useEffect(() => {
     const docRef = db.collection("/users").doc(uid);
     docRef.onSnapshot((doc) => {
-      setTasks(doc.data().tasks);
+      var sortingMethod;
+      console.log(sort);
+      switch (sort) {
+        case "deadline":
+          sortingMethod = (task1, task2) => {
+            return task1.deadline - task2.deadline;
+          };
+
+          break;
+        case "priority":
+          sortingMethod = (task1, task2) => {
+            return task1.priority - task2.priority;
+          };
+
+          break;
+        case "category":
+          sortingMethod = (task1, task2) => {
+            if (task1.category <= task2.category) {
+              return -1;
+            } else {
+              return 1;
+            }
+          };
+
+          break;
+        default:
+          console.log("Should not come here...");
+          break;
+      }
+
+      const processed = doc.data().tasks.sort(sortingMethod);
+      setTasks(processed);
       setHistory(doc.data().history);
     });
     setLoaded(true);
   }, []);
 
   const handleSort = () => {
-    sortMode(!sort);
     console.log(sort);
-    if (sort) {
+    if (sort === "deadline") {
+      sortMode("priority");
       const byPriority = tasks.sort((task1, task2) => {
         return task1.priority - task2.priority;
       });
       setTasks(byPriority);
+    } else if (sort === "priority") {
+      sortMode("category");
+      const byCategory = tasks.sort((task1, task2) => {
+        if (task1.category <= task2.category) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+      setTasks(byCategory);
     } else {
+      sortMode("deadline");
       const byDeadline = tasks.sort((task1, task2) => {
         return task1.deadline - task2.deadline;
       });
@@ -166,9 +208,7 @@ export default function TaskList() {
                   >
                     <td
                       style={
-                        task.deadline.toDate() < new Date()
-                          ? { backgroundColor: "#F3F5F8" }
-                          : task.priority === "1"
+                        task.priority === "1"
                           ? { backgroundColor: "darkorange" }
                           : task.priority === "2"
                           ? { backgroundColor: "#ecd540" }
@@ -196,7 +236,7 @@ export default function TaskList() {
                         paddingRight: "10px",
                       }}
                     >
-                      {task.description}
+                      {task.category}
                     </td>
                     <td>
                       {`${task.deadline.toDate().toDateString().slice(0, 10)}

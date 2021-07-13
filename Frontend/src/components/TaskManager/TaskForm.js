@@ -28,8 +28,12 @@ function TaskForm() {
     const uid = firebase.auth().currentUser?.uid;
     const db = firebase.firestore();
     const docRef = db.collection("/users").doc(uid);
+
     docRef.onSnapshot((doc) => {
-      setTasks(doc.data().tasks);
+      const sorted = doc.data().tasks.sort((task1, task2) => {
+        return task1.deadline - task2.deadline;
+      });
+      setTasks(sorted);
     });
   }, []);
 
@@ -69,12 +73,13 @@ function TaskForm() {
     event.preventDefault();
     const createTime = new Date().toISOString();
     const taskId = firebase.auth().currentUser.uid + createTime;
+
     addTask(
       newTaskName,
       newTaskPriority,
       newTaskDeadline,
+      newTaskCategory,
       newTaskDescription,
-      tasks,
       taskId
     );
     setNewTaskName("");
@@ -89,13 +94,13 @@ function TaskForm() {
   }
 
   // Adds tasks into input array.
-  function addTask(name, priority, deadline, description, array, taskId) {
+  function addTask(name, priority, deadline, category, description, taskId) {
     const insertionDeadline = new Date(deadline);
 
     // This function determines the index of the task to be inserted. Does not work for array of size 0, so be careful.
     function addTaskIndex(low, high) {
       if (low >= high) {
-        if (insertionDeadline - array[low].deadline > 0) {
+        if (insertionDeadline - tasks[low].deadline.toDate() > 0) {
           return low + 1;
         } else {
           return low;
@@ -103,7 +108,7 @@ function TaskForm() {
       } else {
         var mid = Math.floor((low + high) / 2);
 
-        if (insertionDeadline - array[mid].deadline > 0) {
+        if (insertionDeadline - tasks[mid].deadline.toDate() > 0) {
           return addTaskIndex(mid + 1, high);
         } else {
           return addTaskIndex(low, mid);
@@ -113,10 +118,10 @@ function TaskForm() {
 
     var index;
 
-    if (array.length === 0) {
+    if (tasks.length === 0) {
       index = 0;
     } else {
-      index = addTaskIndex(0, array.length - 1);
+      index = addTaskIndex(0, tasks.length - 1);
     }
 
     var inputDescription;
@@ -127,7 +132,7 @@ function TaskForm() {
     }
 
     const newTasks = [
-      ...array.slice(0, index),
+      ...tasks.slice(0, index),
       {
         name: name,
         priority: priority,
@@ -135,10 +140,11 @@ function TaskForm() {
         dateCreated: new Date(),
         dateCompleted: "",
         deadline: insertionDeadline,
+        category: category,
         description: inputDescription,
         taskId: taskId,
       },
-      ...array.slice(index),
+      ...tasks.slice(index),
     ];
 
     if (!name || /^\s*$/.test(name)) {
