@@ -85,6 +85,7 @@ function TaskHistory() {
             dateCreated: task.dateCreated,
             dateCompleted: "",
             deadline: task.deadline,
+            category: tasks.category,
             description: task.description,
             taskId: task.taskId,
           },

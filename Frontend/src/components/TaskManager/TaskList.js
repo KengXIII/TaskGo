@@ -1,12 +1,16 @@
 import firebase from "@firebase/app";
-import { Button, Tooltip } from "@material-ui/core";
+import { Button, FormControl, Tooltip } from "@material-ui/core";
+import { withStyles } from '@material-ui/core/styles';
+import NativeSelect from '@material-ui/core/NativeSelect';
+import InputBase from '@material-ui/core/InputBase';
 import { useEffect, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
-import { BiMessageSquareDetail, BiSort } from "react-icons/bi";
+import { BiMessageSquareDetail } from "react-icons/bi";
 import { TiTickOutline } from "react-icons/ti";
 import updateHistory from "../TaskHistory/updateHistory";
 import cancelMail from "./CancelMail";
 import TaskForm from "./TaskForm";
+import TaskInfo from "./TaskInfo";
 import updateTasks from "./updateTasks";
 
 export default function TaskList() {
@@ -14,8 +18,8 @@ export default function TaskList() {
   const [tasks, setTasks] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [sort, sortMode] = useState("deadline");
-
+  const [sort, setSort] = useState("deadline");
+  
   // Global variables from Firebase
   const uid = firebase.auth().currentUser?.uid;
   const db = firebase.firestore();
@@ -24,69 +28,109 @@ export default function TaskList() {
   useEffect(() => {
     const docRef = db.collection("/users").doc(uid);
     docRef.onSnapshot((doc) => {
-      var sortingMethod;
-      console.log(sort);
-      switch (sort) {
-        case "deadline":
-          sortingMethod = (task1, task2) => {
-            return task1.deadline - task2.deadline;
-          };
-
-          break;
-        case "priority":
-          sortingMethod = (task1, task2) => {
-            return task1.priority - task2.priority;
-          };
-
-          break;
-        case "category":
-          sortingMethod = (task1, task2) => {
-            if (task1.category <= task2.category) {
-              return -1;
-            } else {
-              return 1;
-            }
-          };
-
-          break;
-        default:
-          console.log("Should not come here...");
-          break;
-      }
-
-      const processed = doc.data().tasks.sort(sortingMethod);
-      setTasks(processed);
+      setTasks(doc.data().tasks);
       setHistory(doc.data().history);
     });
     setLoaded(true);
   }, []);
 
-  const handleSort = () => {
-    console.log(sort);
-    if (sort === "deadline") {
-      sortMode("priority");
-      const byPriority = tasks.sort((task1, task2) => {
-        return task1.priority - task2.priority;
-      });
-      setTasks(byPriority);
-    } else if (sort === "priority") {
-      sortMode("category");
-      const byCategory = tasks.sort((task1, task2) => {
-        if (task1.category <= task2.category) {
-          return -1;
-        } else {
-          return 1;
-        }
-      });
-      setTasks(byCategory);
-    } else {
-      sortMode("deadline");
-      const byDeadline = tasks.sort((task1, task2) => {
-        return task1.deadline - task2.deadline;
-      });
-      setTasks(byDeadline);
-    }
-  };
+  // Styling for the Selector of the Sorting system.
+  const BootstrapInput = withStyles((theme) => ({
+    root: {
+      'label + &': {
+        marginTop: theme.spacing(3),
+      },
+    },
+    input: {
+      borderRadius: 4,
+      position: 'relative',
+      backgroundColor: theme.palette.background.paper,
+      border: '1px solid #ced4da',
+      fontSize: 16,
+      padding: '10px 26px 10px 12px',
+      transition: theme.transitions.create(['border-color', 'box-shadow']),
+    },
+  }))(InputBase);
+  
+  // Toggles the sorting method to apply. Order of sort: 
+  // deadline(default), priority, category 
+  const handleSort = (event) => {
+    // console.log("current", sort)
+    // console.log("target", event.target.value)
+    setSort(event.target.value);
+    // console.log("new", sort);
+    var sortingMethod;
+      switch (event.target.value) {
+        case "deadline":
+          sortingMethod = (task1, task2) => {
+            if (task1.deadline === task2.deadline) {
+              if ( task1.priority === task2.priority ) {
+                if ( task1.name < task2.name ) {
+                  return 1;
+                } else {
+                  return -1;
+                }
+              } else {
+                return task1.priority - task2.priority;
+              }
+            } else {
+            return task1.deadline - task2.deadline;
+            }
+          };
+        //  sortMode("deadline");
+          break;
+        case "priority":
+          sortingMethod = (task1, task2) => {
+            if ( task1.priority === task2.priority ) {
+              if ( task1.deadline === task2.deadline ) {
+                if ( task1.name < task2.name ) {
+                  return -1;
+                } else {
+                  return 1;
+                }
+              } else {
+                return task1.deadline - task2.deadline;
+              };
+            } else {
+              return task1.priority - task2.priority;
+            }
+          };
+        //  sortMode("priority")
+          break;
+        case "category":
+          console.log("I CAME TO CATEGORY");
+          sortingMethod = (task1, task2) => {
+            if (task1.category < task2.category) {
+              return -1;
+            } else if (task1.category === task2.category){
+              if (task1.deadline === task2.deadline) {
+                if ( task1.priority === task2.priority ) {
+                  if ( task1.name < task2.name ) {
+                    return -1;
+                  } else {
+                    return 1;
+                  }         
+                } else {
+                  return task1.priority - task2.priority;
+                }
+              } else {
+              return task1.deadline - task2.deadline;
+              }
+            }  else {
+              return 1;
+            }
+          };
+        //  sortMode("category")
+          break;
+        default:
+          console.log("Should not come here...");
+          break;
+      }
+      
+    const processed = tasks.sort(sortingMethod);
+    setTasks(processed);
+    console.log("lastly", sort);
+  }
 
   // Toggles between completed and incomplete.
   function handleTaskToggle(toggledTaskIndex) {
@@ -108,6 +152,7 @@ export default function TaskList() {
           dateCreated: tasks[toggledTaskIndex].dateCreated,
           dateCompleted: new Date(),
           deadline: tasks[toggledTaskIndex].deadline,
+          category: tasks[toggledTaskIndex].category,
           description: tasks[toggledTaskIndex].description,
           taskId: tasks[toggledTaskIndex].taskId,
         },
@@ -160,12 +205,27 @@ export default function TaskList() {
       <main>
         <h2>
           Task List
-          <TaskForm />
+          
+          <TaskForm /> 
+          <TaskInfo style={{ display :"flex", flexDirection: "row", flush:"Right"}} />
         </h2>
 
-        <div>
-          <BiSort onClick={handleSort} />
+        <div style={{display: "flex", flexDirection: "column"}}>
+        <div style={{display: "block", float: "right"}}>
+        <FormControl style={{ float:"right" }}>
+          <NativeSelect
+            value={sort}
+            onChange={handleSort}
+            input={<BootstrapInput />}
+          >
+            <option value={"deadline"}>Deadline</option>
+            <option value={"priority"}>Priority</option>
+            <option value={"category"}>Category</option>
+          </NativeSelect>
+        </FormControl>
         </div>
+        
+        
 
         {tasks.length <= 0 ? (
           <p>Go and have fun for today!</p>
@@ -261,6 +321,7 @@ export default function TaskList() {
             </table>
           </div>
         )}
+        </div>
       </main>
     );
   }
