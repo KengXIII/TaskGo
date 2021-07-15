@@ -18,7 +18,12 @@ function Homepage() {
           if (!doc.exists) {
             db.collection("/users")
               .doc(uid)
-              .set({ tasks: [], history: [], categories: [] });
+              .set({
+                tasks: [],
+                history: [],
+                categories: [],
+                sortView: "deadline",
+              });
           }
         });
       });

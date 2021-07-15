@@ -5,7 +5,5 @@ export default function updateTasks(tasks) {
   const db = firebase.firestore();
   const docRef = db.collection("/users").doc(uid);
 
-  docRef.get().then((doc) => {
-    docRef.update({ tasks: tasks });
-  });
+  docRef.update({ tasks: tasks });
 }

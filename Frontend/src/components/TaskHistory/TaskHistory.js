@@ -4,11 +4,10 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { GrRevert } from "react-icons/gr";
 import sendMailReminder from "../TaskManager/SendMail";
 import updateHistory from "./updateHistory";
-import updateTasks from "../TaskManager/updateTasks";
+import addTask from "../TaskManager/AddTask";
 
 function TaskHistory() {
   const [history, setHistory] = useState([]);
-  const [tasks, setTasks] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [busy, setBusy] = useState(false);
 
@@ -19,11 +18,10 @@ function TaskHistory() {
   useEffect(() => {
     const docRef = db.collection("/users").doc(uid);
     docRef.onSnapshot((doc) => {
-      setTasks(doc.data().tasks);
       setHistory(doc.data().history);
     });
     setLoaded(true);
-  }, []);
+  }, [db, uid]);
 
   function handleDeleteTask(index) {
     if (busy) {
@@ -48,56 +46,15 @@ function TaskHistory() {
       setBusy(true);
       console.log("task started");
       // Adds tasks into input array.
-      function addTask(array) {
-        // This function determines the index of the task to be inserted. Does not work for array of size 0, so be careful.
-        function addTaskIndex(low, high) {
-          if (low >= high) {
-            if (task.deadline - array[low].deadline > 0) {
-              return low + 1;
-            } else {
-              return low;
-            }
-          } else {
-            var mid = Math.floor((low + high) / 2);
+      addTask(
+        task.name,
+        task.priority,
+        task.deadline,
+        task.category,
+        task.description,
+        task.taskId
+      );
 
-            if (task.deadline - array[mid].deadline > 0) {
-              return addTaskIndex(mid + 1, high);
-            } else {
-              return addTaskIndex(low, mid);
-            }
-          }
-        }
-
-        var insertIndex;
-
-        if (array.length === 0) {
-          insertIndex = 0;
-        } else {
-          insertIndex = addTaskIndex(0, array.length - 1);
-        }
-
-        const newTasks = [
-          ...array.slice(0, insertIndex),
-          {
-            name: task.name,
-            priority: task.priority,
-            isComplete: false,
-            dateCreated: task.dateCreated,
-            dateCompleted: "",
-            deadline: task.deadline,
-            category: tasks.category,
-            description: task.description,
-            taskId: task.taskId,
-          },
-          ...array.slice(insertIndex),
-        ];
-
-        setTasks(newTasks);
-        updateTasks(newTasks);
-      }
-
-      // Inserting the task into tasks.
-      addTask(tasks);
       sendMailReminder(task.taskId, task.deadline, task.name);
 
       // Removing from history

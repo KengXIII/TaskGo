@@ -2,15 +2,14 @@ import axios from "axios";
 import { firebase } from "@firebase/app";
 
 export default function sendMailReminder(taskId, deadline, taskName) {
-  const dueDate = new Date(deadline);
   const emailPrior = 86400000;
-  const emailDate = new Date(dueDate.getTime() - emailPrior);
+  const emailDate = new Date(deadline.getTime() - emailPrior);
   axios
     //.post("https://stark-plains-53456.herokuapp.com/send_mail", {
     .post("http://localhost:4000/send_mail", {
       taskName: taskName,
-      date: dueDate.toDateString(),
-      time: `${dueDate.toLocaleTimeString([], {
+      date: deadline.toDateString(),
+      time: `${deadline.toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
       })}`,

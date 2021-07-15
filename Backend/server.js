@@ -141,7 +141,9 @@ var clearHistory = cron.schedule("0 0 0 * * *", function () {
           var history = doc.data().history;
           var current = new Date();
           var newHistory = history.filter(
-            (task) => current - 604800000 < task.dateCompleted.toDate()
+            (task) =>
+              new Date(current.getTime() - 604800000) <
+              task.dateCompleted.toDate()
           );
           var originalLength = history.length;
           var newLength = newHistory.length;

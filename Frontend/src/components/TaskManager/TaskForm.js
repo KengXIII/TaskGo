@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { firebase } from "@firebase/app";
 import "@firebase/firestore";
 import {
@@ -13,29 +13,15 @@ import { withStyles } from "@material-ui/core/styles";
 import { green, orange, red } from "@material-ui/core/colors";
 import { BiCalendarPlus } from "react-icons/bi";
 import sendMailReminder from "./SendMail";
-import updateTasks from "./updateTasks";
+import addTask from "./AddTask";
 
 function TaskForm() {
-  const [tasks, setTasks] = useState([]);
   const [newTaskName, setNewTaskName] = useState("");
   const [newTaskDeadline, setNewTaskDeadline] = useState("");
   const [newTaskDescription, setNewTaskDescription] = useState("");
   const [newTaskPriority, setNewTaskPriority] = useState("3");
   const [newTaskCategory, setNewTaskCategory] = useState("");
   var send = false;
-
-  useEffect(() => {
-    const uid = firebase.auth().currentUser?.uid;
-    const db = firebase.firestore();
-    const docRef = db.collection("/users").doc(uid);
-
-    docRef.onSnapshot((doc) => {
-      const sorted = doc.data().tasks.sort((task1, task2) => {
-        return task1.deadline - task2.deadline;
-      });
-      setTasks(sorted);
-    });
-  }, []);
 
   // Creating our Coloured Radio buttons...
   const P3Radio = withStyles({
@@ -73,13 +59,30 @@ function TaskForm() {
     event.preventDefault();
     const createTime = new Date().toISOString();
     const taskId = firebase.auth().currentUser.uid + createTime;
+    const insertionDeadline = new Date(newTaskDeadline);
 
+    // Check for description, default will be "no description"
+    var inputDescription;
+    if (!newTaskDescription || /^\s*$/.test(newTaskDescription)) {
+      inputDescription = "No description";
+    } else {
+      inputDescription = newTaskDescription;
+    }
+
+    // Check if task contains only spaces, no mail will be sent if true
+    if (!newTaskName || /^\s*$/.test(newTaskName)) {
+      return;
+    } else {
+      send = true;
+    }
+
+    // Adding task into database
     addTask(
       newTaskName,
       newTaskPriority,
-      newTaskDeadline,
+      insertionDeadline,
       newTaskCategory,
-      newTaskDescription,
+      inputDescription,
       taskId
     );
     setNewTaskName("");
@@ -91,69 +94,6 @@ function TaskForm() {
       sendMailReminder(taskId, newTaskDeadline, newTaskName);
       send = false;
     }
-  }
-
-  // Adds tasks into input array.
-  function addTask(name, priority, deadline, category, description, taskId) {
-    const insertionDeadline = new Date(deadline);
-
-    // This function determines the index of the task to be inserted. Does not work for array of size 0, so be careful.
-    function addTaskIndex(low, high) {
-      if (low >= high) {
-        if (insertionDeadline - tasks[low].deadline.toDate() > 0) {
-          return low + 1;
-        } else {
-          return low;
-        }
-      } else {
-        var mid = Math.floor((low + high) / 2);
-
-        if (insertionDeadline - tasks[mid].deadline.toDate() > 0) {
-          return addTaskIndex(mid + 1, high);
-        } else {
-          return addTaskIndex(low, mid);
-        }
-      }
-    }
-
-    var index;
-
-    if (tasks.length === 0) {
-      index = 0;
-    } else {
-      index = addTaskIndex(0, tasks.length - 1);
-    }
-
-    var inputDescription;
-    if (!description || /^\s*$/.test(description)) {
-      inputDescription = "No description";
-    } else {
-      inputDescription = description;
-    }
-
-    const newTasks = [
-      ...tasks.slice(0, index),
-      {
-        name: name,
-        priority: priority,
-        isComplete: false,
-        dateCreated: new Date(),
-        dateCompleted: "",
-        deadline: insertionDeadline,
-        category: category,
-        description: inputDescription,
-        taskId: taskId,
-      },
-      ...tasks.slice(index),
-    ];
-
-    if (!name || /^\s*$/.test(name)) {
-      return;
-    } else {
-      send = true;
-    }
-    setTasks(newTasks);
-    updateTasks(newTasks);
   }
 
   const [open, setOpen] = useState(false);

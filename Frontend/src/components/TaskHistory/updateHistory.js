@@ -5,7 +5,5 @@ export default function updateHistory(newHistory) {
   const db = firebase.firestore();
   const docRef = db.collection("/users").doc(uid);
 
-  docRef.get().then((doc) => {
-    docRef.update({ history: newHistory });
-  });
+  docRef.update({ history: newHistory });
 }
