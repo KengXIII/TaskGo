@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { firebase } from "@firebase/app";
 import "@firebase/firestore";
 import {
@@ -24,6 +24,48 @@ function TaskForm() {
   const [newTaskDescription, setNewTaskDescription] = useState("");
   const [newTaskPriority, setNewTaskPriority] = useState("3");
   const [newTaskCategory, setNewTaskCategory] = useState("");
+
+  // State of dialog opening/closing
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setNewTaskName("");
+    setNewTaskDeadline("");
+    setNewTaskDescription("");
+    setNewTaskPriority("3");
+    setNewTaskCategory("");
+    setOpen(false);
+    setIntervalData({ interval: false, mode: "Single" });
+  };
+
+  // Values for interval task
+  const [intervalEnd, setIntervalEnd] = useState("");
+  const [interval, setInterval] = useState();
+
+  const [intervalData, setIntervalData] = useState({
+    interval: false,
+    mode: "Single",
+  });
+
+  const handleIntervalToggle = () => {
+    if (intervalData.interval) {
+      setIntervalData({
+        interval: false,
+        mode: "Single",
+      });
+    } else {
+      setIntervalData({
+        interval: true,
+        mode: "Interval",
+      });
+    }
+  };
+
+  // Flag used to determined if email should be sent
   var send = false;
 
   // Creating our Coloured Radio buttons...
@@ -80,7 +122,7 @@ function TaskForm() {
     }
 
     // Adding task into database
-    if (interval) {
+    if (intervalData.interval) {
       addIntervaltask(
         newTaskName,
         newTaskPriority,
@@ -88,8 +130,8 @@ function TaskForm() {
         newTaskCategory,
         inputDescription,
         taskId,
-        60000,
-        new Date(2021, 11, 11)
+        60000, // should use interval
+        new Date(2021, 11, 11) // should use new Date(intervalEnd)
       );
     } else {
       addTask(
@@ -114,38 +156,6 @@ function TaskForm() {
     setNewTaskCategory("");
   }
 
-  const [open, setOpen] = useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setNewTaskName("");
-    setNewTaskDeadline("");
-    setNewTaskDescription("");
-    setNewTaskPriority("3");
-    setNewTaskCategory("");
-    setOpen(false);
-    setInterval(false);
-    setIntervalState("Single");
-  };
-
-  const [interval, setInterval] = useState(false);
-  const [intervalState, setIntervalState] = useState("Single");
-  useEffect(() => {
-    console.log(interval);
-    if (interval) {
-      setIntervalState("Interval");
-    } else {
-      setIntervalState("Single");
-    }
-  }, [interval]);
-
-  const handleIntervalToggle = () => {
-    setInterval(!interval);
-  };
-
   return (
     <>
       <BiCalendarPlus
@@ -166,9 +176,12 @@ function TaskForm() {
           <label style={{ fontSize: "30px" }}>Add Task</label>
           <FormControlLabel
             control={
-              <Switch checked={interval} onChange={handleIntervalToggle} />
+              <Switch
+                checked={intervalData.interval}
+                onChange={handleIntervalToggle}
+              />
             }
-            label={intervalState}
+            label={intervalData.mode}
             labelPlacement="start"
             style={{ float: "right" }}
           />
@@ -198,6 +211,8 @@ function TaskForm() {
             </p>
             <p>Category</p>
             <p>Description</p>
+            <p>Interval End</p>
+            <p>Repeat in</p>
           </div>
 
           <form
@@ -211,17 +226,16 @@ function TaskForm() {
             <Input
               // Input for the task name.
               required={true}
+              // Ensures that the cursor is on the textfield when component loads
               autoFocus={true}
               className="task-name-field"
               style={{ paddingLeft: "3px" }}
               placeholder="Enter Task Name"
               value={newTaskName}
               inputProps={{ "aria-label": "name" }}
-              // Ensures that the cursor is on the textfield when component loads
               onChange={(event) => setNewTaskName(event.target.value)}
             />
             <br></br>
-
             <TextField
               // Input for the deadline.
               required={true}
@@ -286,6 +300,26 @@ function TaskForm() {
               onChange={(event) => setNewTaskDescription(event.target.value)}
             />
             <br></br>
+            <TextField
+              // Input for the interval end.
+              className="interval-end"
+              type="date"
+              style={{ paddingLeft: "3px", width: "300px" }}
+              value={intervalEnd}
+              onChange={(event) => setIntervalEnd(event.target.value)}
+            />
+            <br></br>
+            <Input
+              // Input a short description for the task.
+              type="number"
+              style={{ marginRight: "1rem", paddingLeft: "3px" }}
+              placeholder="days"
+              value={interval}
+              inputProps={{ "aria-label": "description" }}
+              onChange={(event) => setInterval(event.target.value)}
+            />
+            <br></br>
+
             <div
               style={{
                 display: "flex",

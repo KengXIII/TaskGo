@@ -7,6 +7,8 @@ import {
   Tooltip,
   Input,
   TextField,
+  FormControlLabel,
+  Checkbox,
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import Radio from "@material-ui/core/Radio";
@@ -18,17 +20,22 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { BiMessageSquareDetail } from "react-icons/bi";
 import { TiTickOutline } from "react-icons/ti";
 import { MdModeEdit } from "react-icons/md";
+import AddBox from "@material-ui/icons/AddBox";
+import IndeterminateCheckBox from "@material-ui/icons/IndeterminateCheckBox";
 import cancelMail from "./CancelMail";
 import TaskForm from "./TaskForm";
-// import TaskInfo from "./TaskInfo";
+import TaskInfo from "./TaskInfo";
 import updateTasks from "./updateTasks";
 import SortTask from "./SortTask";
 import AddHistory from "../TaskHistory/AddHistory";
 import addTask from "./AddTask";
 import sendMailReminder from "./SendMail";
+import Favorite from "@material-ui/icons/Favorite";
+import FavoriteBorder from "@material-ui/icons/FavoriteBorder";
 
 export default function TaskList() {
   const [tasks, setTasks] = useState([]);
+  const [display, setDisplay] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [busy, setBusy] = useState(false);
   const [sort, setSort] = useState("deadline");
@@ -44,8 +51,59 @@ export default function TaskList() {
       setTasks(doc.data().tasks);
       setSort(doc.data().sortView);
     });
+
     setLoaded(true);
   }, [db, uid]);
+
+  // UNFINISHED!!! This hook is for monitoring all available categories.
+  const [category, setCategory] = useState(["TaskA", "TaskB", "TaskC"]);
+  // UNFINISHED!!! This hook is for monitoring all the checks.
+  const [checked, setChecked] = useState([]);
+
+  useEffect(() => {
+    var temp = {};
+    category.forEach((item) => {
+      temp[item] = true;
+    });
+    setChecked(temp);
+  }, []);
+
+  // This hook is for filtering by Category.
+  const [filter, setFilter] = useState(category);
+
+  // This function is for when 'Choose no category' is clicked.
+  function chooseNone() {
+    setFilter([]);
+  }
+
+  // This function is for when 'Choose all category' is clicked.
+  function chooseAll() {
+    // UNFINISHED!!! tick all the options available.
+    setFilter(category);
+  }
+
+  // This function is for filtering when a certain category button is activated.
+  function addFilter(addedCategory) {
+    const newFilter = [...filter.slice(0), addedCategory];
+    setFilter(newFilter);
+  }
+
+  // This function is for filtering when a certain category button is deactivated.
+  function deleteFilter(deletedCategory) {
+    const newFilter = filter.filter((cat) => cat !== deletedCategory);
+    setFilter(newFilter);
+  }
+
+  // Updates the local copy of array when database array change
+  useEffect(() => {
+    setDisplay([]);
+    var newDisp = [];
+    tasks.forEach((current, index) => {
+      newDisp = [...newDisp, { taskIndex: index, task: current }];
+    });
+    newDisp = newDisp.filter((pair) => filter.includes(pair.task.category));
+    setDisplay(newDisp);
+  }, [tasks, filter]);
 
   // Styling for the Selector of the Sorting system.
   const BootstrapInput = withStyles((theme) => ({
@@ -73,11 +131,9 @@ export default function TaskList() {
   // Toggles between completed and incomplete.
   function handleTaskToggle(toggledTaskIndex) {
     if (busy) {
-      console.log("lagged");
       window.setTimeout(handleTaskToggle, 50);
     } else {
       setBusy(true);
-      console.log("task started");
       // Get the name of the cron job
       const taskId = tasks[toggledTaskIndex].taskId;
 
@@ -104,17 +160,14 @@ export default function TaskList() {
       // Cancel the cron email job
       cancelMail(taskId);
       setBusy(false);
-      console.log("task ended");
     }
   }
 
   function handleDeleteTask(deleteIndex) {
     if (busy) {
-      console.log("lagged");
       window.setTimeout(handleDeleteTask, 50);
     } else {
       setBusy(true);
-      console.log("task started");
       // Cancel Mail
       cancelMail(tasks[deleteIndex].taskId);
 
@@ -127,7 +180,6 @@ export default function TaskList() {
       setTasks(newTask);
       updateTasks(newTask);
       setBusy(false);
-      console.log("task ended");
     }
   }
 
@@ -162,6 +214,7 @@ export default function TaskList() {
     checked: {},
   })((P1props) => <Radio color="default" {...P1props} />);
 
+  // This is for task addition form for Edit function.
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = (task, index) => {
@@ -169,7 +222,6 @@ export default function TaskList() {
     const date = new Date(
       task.deadline.toDate().getTime() + 28800000
     ).toISOString();
-    console.log(date);
     setNewTaskDeadline(date.substring(0, date.length - 1));
     setNewTaskDescription(task.description);
     setNewTaskPriority(task.priority);
@@ -231,6 +283,68 @@ export default function TaskList() {
     return (
       <main>
         <h2>
+          Category Filter
+          <Button style={{ cursor: "pointer" }} onClick={chooseAll}>
+            <AddBox />
+          </Button>
+          <Button style={{ cursor: "pointer" }} onClick={chooseNone}>
+            <IndeterminateCheckBox />
+          </Button>
+          <TaskInfo
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              marginLeft: "1rem",
+              fontSize: "medium",
+            }}
+          />
+        </h2>
+
+        {/* <Button style={{ cursor: "pointer" }} onClick={() => addFilter("??")}>
+          All other categories belong here.
+        </Button> */}
+        <div>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            {category.map((cat) => (
+              <div style={{ justifyContent: "space-evenly" }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      name={cat}
+                      icon={<FavoriteBorder />}
+                      checkedIcon={<Favorite />}
+                      // check =
+                      onClick={(event) =>
+                        event.target.checked
+                          ? addFilter(event.target.value)
+                          : deleteFilter(event.target.value)
+                      }
+                      value={cat}
+                      defaultChecked={true}
+                    />
+                  }
+                  label={cat}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <Button
+            onClick={() => {
+              console.log(
+                "Tasks: " + tasks.length,
+                "Display: " + display.length,
+                "Filter: " + filter.length
+              );
+            }}
+          >
+            Debug
+          </Button>
+        </div>
+
+        <h2>
           Task List
           <TaskForm />
           <div style={{ display: "block", float: "right" }}>
@@ -246,11 +360,10 @@ export default function TaskList() {
               </NativeSelect>
             </FormControl>
           </div>
-          {/* <TaskInfo style={{ display :"flex", flexDirection: "row", flush:"Right"}} /> */}
         </h2>
 
-        {tasks.length <= 0 ? (
-          <p>Go and have fun for today!</p>
+        {display.length <= 0 ? (
+          <p>No relevant tasks!</p>
         ) : (
           <div
             style={{
@@ -283,10 +396,10 @@ export default function TaskList() {
                 </tr>
               </thead>
               <tbody>
-                {tasks.map((task, index) => (
+                {display.map((pair, index) => (
                   <tr
                     style={
-                      task.deadline.toDate() < new Date()
+                      pair.task.deadline.toDate() < new Date()
                         ? { backgroundColor: "#ff7a7a50" }
                         : {}
                     }
@@ -295,19 +408,19 @@ export default function TaskList() {
                   >
                     <td
                       style={
-                        task.priority === "1"
+                        pair.task.priority === "1"
                           ? { backgroundColor: "darkorange" }
-                          : task.priority === "2"
+                          : pair.task.priority === "2"
                           ? { backgroundColor: "#ecd540" }
                           : { backgroundColor: "limegreen" }
                       }
                     ></td>
                     <td style={{ wordWrap: "break-word", paddingLeft: "5px" }}>
-                      {task.name}
+                      {pair.task.name}
                     </td>
                     <td style={{ textAlign: "center", cursor: "pointer" }}>
                       <Tooltip
-                        title={task.description}
+                        title={pair.task.description}
                         interactive
                         placement="right"
                       >
@@ -323,28 +436,33 @@ export default function TaskList() {
                         paddingRight: "10px",
                       }}
                     >
-                      {task.category}
+                      {pair.task.category}
                     </td>
                     <td>
-                      {`${task.deadline.toDate().toDateString().slice(0, 10)}
-                  ${task.deadline.toDate().toLocaleTimeString([], {
+                      {`${pair.task.deadline
+                        .toDate()
+                        .toDateString()
+                        .slice(0, 10)}
+                  ${pair.task.deadline.toDate().toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}`}
                     </td>
 
                     <td style={{ textAlign: "center", cursor: "pointer" }}>
-                      <TiTickOutline onClick={() => handleTaskToggle(index)} />
+                      <TiTickOutline
+                        onClick={() => handleTaskToggle(pair.index)}
+                      />
                     </td>
                     <td style={{ textAlign: "center", cursor: "pointer" }}>
                       <AiOutlineDelete
-                        onClick={() => handleDeleteTask(index)}
+                        onClick={() => handleDeleteTask(pair.index)}
                         className="delete-icon"
                       />
                     </td>
                     <td>
                       <MdModeEdit
-                        onClick={() => handleClickOpen(task, index)}
+                        onClick={() => handleClickOpen(pair.task, pair.index)}
                       />
                     </td>
                   </tr>
