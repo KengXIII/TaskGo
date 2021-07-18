@@ -55,7 +55,7 @@ function TaskHistory() {
         task.taskId
       );
 
-      sendMailReminder(task.taskId, task.deadline, task.name);
+      sendMailReminder(task.taskId, task.deadline.toDate(), task.name);
 
       // Removing from history
       const newHistory = [

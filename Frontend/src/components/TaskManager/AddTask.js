@@ -32,6 +32,7 @@ export default function addTask(
           category: category,
           description: description,
           taskId: taskId,
+          interval: false,
         },
       ];
 

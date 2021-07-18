@@ -7,6 +7,9 @@ const nodemailer = require("nodemailer");
 const schedule = require("node-schedule");
 const cron = require("node-cron");
 
+// Axios package
+const axios = require("axios").default;
+
 // Firebase SDK
 var admin = require("firebase-admin");
 admin.initializeApp({
@@ -20,6 +23,8 @@ admin.initializeApp({
   }),
   databaseURL: process.env.DATABASEURL,
 });
+
+var db = admin.firestore();
 
 // Server uses express.js
 const app = express();
@@ -111,7 +116,7 @@ app.post("/send_mail", cors(), (req, res) => {
       console.log("Message sent at: %s", info.messageId);
     });
   });
-  console.log("Job scheduled");
+  console.log("Email scheduled");
   res.end();
 });
 
@@ -120,18 +125,107 @@ app.post("/cancel_mail", (req, res) => {
     schedule.scheduledJobs[req.body.taskId].cancel();
     console.log("Success: Email cancelled");
   } catch (TypeError) {
-    console.log("Error: cron job not found");
   } finally {
     res.end();
   }
 });
 
+app.post("/interval_task", (req, res) => {
+  const uid = req.body.uid;
+  const newTask = req.body.task;
+  const interval = req.body.interval;
+  const intervalEnd = req.body.intervalEnd;
+  const count = req.body.count;
+  const deadline = new Date(newTask.deadline);
+  const name = req.body.name;
+  const email = req.body.email;
+  console.log(
+    `-------------------${uid} added interval job -----------------------`
+  );
+
+  var docRef = db.collection("/users").doc(uid);
+
+  docRef.get().then((doc) => {
+    const tasks = doc.data().tasks;
+
+    const newTasks = [
+      ...tasks.slice(0),
+      {
+        name: newTask.name,
+        priority: newTask.priority,
+        isComplete: false,
+        dateCreated: new Date(),
+        dateCompleted: "",
+        deadline: deadline,
+        category: newTask.category,
+        description: newTask.description,
+        taskId: newTask.taskId,
+        interval: true,
+      },
+    ];
+    docRef.update({ tasks: newTasks });
+  });
+
+  // Scheduling the email
+  const emailPrior = 86400000;
+  const emailDate = new Date(deadline.getTime() - emailPrior);
+
+  axios.post("http://localhost:4000/send_mail", {
+    taskName: newTask.name,
+    date: deadline.toDateString(),
+    time: `${deadline.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    })}`,
+    name: name,
+    email: email,
+    emailTime: emailDate,
+    taskId: newTask.taskId,
+  });
+
+  // Schedule next task only if the deadline of next task is
+  // before intervalEnd
+  if (new Date(deadline.getTime() + interval) < new Date(intervalEnd)) {
+    console.log("scheduling next", new Date(deadline.getTime() - 86400000));
+    const createTime = new Date().toISOString();
+
+    // Schedule task 1 day before the previous task is due
+    schedule.scheduleJob(
+      `${uid}${createTime}`,
+      new Date(deadline.getTime() - 86400000),
+      function () {
+        axios.post("http://localhost:4000/interval_task", {
+          uid: uid,
+          task: {
+            name: newTask.name,
+            priority: newTask.priority,
+            isComplete: false,
+            dateCreated: new Date(),
+            dateCompleted: "",
+            deadline: new Date(deadline.getTime() + interval),
+            category: newTask.category,
+            description: newTask.description,
+            taskId: `${uid}${createTime}`,
+            interval: true,
+          },
+          interval: interval,
+          intervalEnd: intervalEnd,
+          count: count + 1,
+          name: name,
+          email: email,
+        });
+      }
+    );
+  }
+
+  res.end();
+});
+
 // Module used to clean up all user's history at 00:00hrs everyday
-var clearHistory = cron.schedule("0 0 0 * * *", function () {
+cron.schedule("0 0 0 * * *", function () {
   console.log(
     `Running daily history clean-up at ${new Date(Date.now()).toDateString()}\n`
   );
-  var db = admin.firestore();
   db.collection("/users")
     .get()
     .then(

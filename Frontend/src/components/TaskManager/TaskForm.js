@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { firebase } from "@firebase/app";
 import "@firebase/firestore";
 import {
@@ -7,6 +7,8 @@ import {
   Dialog,
   DialogTitle,
   TextField,
+  FormControlLabel,
+  Switch,
 } from "@material-ui/core";
 import Radio from "@material-ui/core/Radio";
 import { withStyles } from "@material-ui/core/styles";
@@ -14,6 +16,7 @@ import { green, orange, red } from "@material-ui/core/colors";
 import { BiCalendarPlus } from "react-icons/bi";
 import sendMailReminder from "./SendMail";
 import addTask from "./AddTask";
+import addIntervaltask from "./AddIntervalTask";
 
 function TaskForm() {
   const [newTaskName, setNewTaskName] = useState("");
@@ -77,23 +80,38 @@ function TaskForm() {
     }
 
     // Adding task into database
-    addTask(
-      newTaskName,
-      newTaskPriority,
-      insertionDeadline,
-      newTaskCategory,
-      inputDescription,
-      taskId
-    );
+    if (interval) {
+      addIntervaltask(
+        newTaskName,
+        newTaskPriority,
+        insertionDeadline,
+        newTaskCategory,
+        inputDescription,
+        taskId,
+        60000,
+        new Date(2021, 11, 11)
+      );
+    } else {
+      addTask(
+        newTaskName,
+        newTaskPriority,
+        insertionDeadline,
+        newTaskCategory,
+        inputDescription,
+        taskId
+      );
+
+      if (send) {
+        sendMailReminder(taskId, insertionDeadline, newTaskName);
+        send = false;
+      }
+    }
+
     setNewTaskName("");
     setNewTaskDeadline("");
     setNewTaskDescription("");
     setNewTaskPriority("3");
     setNewTaskCategory("");
-    if (send) {
-      sendMailReminder(taskId, newTaskDeadline, newTaskName);
-      send = false;
-    }
   }
 
   const [open, setOpen] = useState(false);
@@ -109,6 +127,23 @@ function TaskForm() {
     setNewTaskPriority("3");
     setNewTaskCategory("");
     setOpen(false);
+    setInterval(false);
+    setIntervalState("Single");
+  };
+
+  const [interval, setInterval] = useState(false);
+  const [intervalState, setIntervalState] = useState("Single");
+  useEffect(() => {
+    console.log(interval);
+    if (interval) {
+      setIntervalState("Interval");
+    } else {
+      setIntervalState("Single");
+    }
+  }, [interval]);
+
+  const handleIntervalToggle = () => {
+    setInterval(!interval);
   };
 
   return (
@@ -129,6 +164,14 @@ function TaskForm() {
       >
         <DialogTitle id="form-dialog-title">
           <label style={{ fontSize: "30px" }}>Add Task</label>
+          <FormControlLabel
+            control={
+              <Switch checked={interval} onChange={handleIntervalToggle} />
+            }
+            label={intervalState}
+            labelPlacement="start"
+            style={{ float: "right" }}
+          />
         </DialogTitle>
         <div
           style={{
