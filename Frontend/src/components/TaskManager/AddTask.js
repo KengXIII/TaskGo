@@ -11,6 +11,7 @@ export default function addTask(
   taskId
 ) {
   var tasks;
+  var storedCategory;
   var sortView;
   const uid = firebase.auth().currentUser?.uid;
   const db = firebase.firestore();
@@ -19,6 +20,7 @@ export default function addTask(
     .get()
     .then((doc) => {
       tasks = doc.data().tasks;
+      storedCategory = doc.data().category;
       sortView = doc.data().sortView;
       const newTasks = [
         ...tasks.slice(0),
@@ -35,6 +37,24 @@ export default function addTask(
           interval: false,
         },
       ];
+      var newStoredCategory;
+      if (
+        storedCategory.some((pair) => {
+          return pair.name === category;
+        })
+      ) {
+        newStoredCategory = storedCategory.map((pair) => {
+          return pair.name === category
+            ? { name: pair.name, value: pair.value + 1 }
+            : { name: pair.name, value: pair.value };
+        });
+      } else {
+        newStoredCategory = [...storedCategory, { name: category, value: 1 }];
+      }
+      newStoredCategory = newStoredCategory.sort((pair1, pair2) => {
+        return pair1.name < pair2.name ? -1 : 1;
+      });
+      docRef.update({ category: newStoredCategory });
 
       updateTasks(newTasks);
     })

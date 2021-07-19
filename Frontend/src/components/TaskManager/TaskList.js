@@ -39,7 +39,7 @@ export default function TaskList() {
   const [loaded, setLoaded] = useState(false);
   const [busy, setBusy] = useState(false);
   const [sort, setSort] = useState("deadline");
-
+  const [category, setCategory] = useState([]);
   // Global variables from Firebase
   const uid = firebase.auth().currentUser?.uid;
   const db = firebase.firestore();
@@ -50,13 +50,16 @@ export default function TaskList() {
     docRef.onSnapshot((doc) => {
       setTasks(doc.data().tasks);
       setSort(doc.data().sortView);
+      setCategory(
+        doc.data().category.map((pair) => {
+          return pair.name;
+        })
+      );
     });
 
     setLoaded(true);
   }, [db, uid]);
 
-  // UNFINISHED!!! This hook is for monitoring all available categories.
-  const [category, setCategory] = useState(["TaskA", "TaskB", "TaskC"]);
   // UNFINISHED!!! This hook is for monitoring all the checks.
   const [checked, setChecked] = useState([]);
 
@@ -128,30 +131,56 @@ export default function TaskList() {
     SortTask(event.target.value);
   };
 
+  function removeCategory(oldCategory) {
+    const docRef = db.collection("/users").doc(uid);
+    docRef.get().then((doc) => {
+      const storedCategory = doc.data().category;
+      const newStoredCategory = storedCategory
+        .map((pair) => {
+          return pair.name === oldCategory
+            ? pair.value - 1 === 0
+              ? null
+              : { name: pair.name, value: pair.value - 1 }
+            : { name: pair.name, value: pair.value };
+        })
+        .filter((obj) => {
+          return obj !== null;
+        })
+        .sort((pair1, pair2) => {
+          return pair1.name < pair2.name ? -1 : 1;
+        });
+      docRef.update({ category: newStoredCategory });
+    });
+  }
+
   // Toggles between completed and incomplete.
   function handleTaskToggle(toggledTaskIndex) {
     if (busy) {
       window.setTimeout(handleTaskToggle, 50);
     } else {
       setBusy(true);
+      const originalIndex = display[toggledTaskIndex].taskIndex;
+
       // Get the name of the cron job
       const taskId = tasks[toggledTaskIndex].taskId;
 
       //Add task at the front of array in history
       AddHistory(
-        tasks[toggledTaskIndex].name,
-        tasks[toggledTaskIndex].priority,
-        tasks[toggledTaskIndex].dateCreated,
-        tasks[toggledTaskIndex].deadline,
-        tasks[toggledTaskIndex].category,
-        tasks[toggledTaskIndex].description,
-        tasks[toggledTaskIndex].taskId
+        tasks[originalIndex].name,
+        tasks[originalIndex].priority,
+        tasks[originalIndex].dateCreated,
+        tasks[originalIndex].deadline,
+        tasks[originalIndex].category,
+        tasks[originalIndex].description,
+        tasks[originalIndex].taskId
       );
+
+      removeCategory(tasks[originalIndex].category);
 
       //Remove the task from local array
       const newTasks = [
-        ...tasks.slice(0, toggledTaskIndex),
-        ...tasks.slice(toggledTaskIndex + 1),
+        ...tasks.slice(0, originalIndex),
+        ...tasks.slice(originalIndex + 1),
       ];
       //Update array with new elements
       setTasks(newTasks);
@@ -168,13 +197,16 @@ export default function TaskList() {
       window.setTimeout(handleDeleteTask, 50);
     } else {
       setBusy(true);
+      const originalIndex = display[deleteIndex].taskIndex;
+
       // Cancel Mail
-      cancelMail(tasks[deleteIndex].taskId);
+      cancelMail(tasks[originalIndex].taskId);
+      removeCategory(tasks[originalIndex].category);
 
       //Remove the task from local array
       const newTask = [
-        ...tasks.slice(0, deleteIndex),
-        ...tasks.slice(deleteIndex + 1),
+        ...tasks.slice(0, originalIndex),
+        ...tasks.slice(originalIndex + 1),
       ];
       //Update array with new elements
       setTasks(newTask);
@@ -218,15 +250,17 @@ export default function TaskList() {
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = (task, index) => {
-    setNewTaskName(task.name);
+    const originalIndex = task.taskIndex;
+
+    setNewTaskName(tasks[originalIndex].name);
     const date = new Date(
       task.deadline.toDate().getTime() + 28800000
     ).toISOString();
     setNewTaskDeadline(date.substring(0, date.length - 1));
-    setNewTaskDescription(task.description);
-    setNewTaskPriority(task.priority);
-    setNewTaskCategory(task.category);
-    setEditIndex(index);
+    setNewTaskDescription(tasks[originalIndex].description);
+    setNewTaskPriority(tasks[originalIndex].priority);
+    setNewTaskCategory(tasks[originalIndex].category);
+    setEditIndex(tasks[originalIndex]);
     setOpen(true);
   };
 
@@ -304,7 +338,13 @@ export default function TaskList() {
           All other categories belong here.
         </Button> */}
         <div>
-          <div style={{ display: "flex", flexDirection: "row" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              overflowX: "auto",
+            }}
+          >
             {category.map((cat) => (
               <div style={{ justifyContent: "space-evenly" }}>
                 <FormControlLabel
@@ -320,7 +360,7 @@ export default function TaskList() {
                           : deleteFilter(event.target.value)
                       }
                       value={cat}
-                      defaultChecked={true}
+                      defaultChecked={false}
                     />
                   }
                   label={cat}
@@ -450,13 +490,11 @@ export default function TaskList() {
                     </td>
 
                     <td style={{ textAlign: "center", cursor: "pointer" }}>
-                      <TiTickOutline
-                        onClick={() => handleTaskToggle(pair.index)}
-                      />
+                      <TiTickOutline onClick={() => handleTaskToggle(index)} />
                     </td>
                     <td style={{ textAlign: "center", cursor: "pointer" }}>
                       <AiOutlineDelete
-                        onClick={() => handleDeleteTask(pair.index)}
+                        onClick={() => handleDeleteTask(index)}
                         className="delete-icon"
                       />
                     </td>
