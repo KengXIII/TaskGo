@@ -6,6 +6,8 @@ import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
 import { TiTickOutline } from "react-icons/ti";
 import { AiOutlineDelete } from "react-icons/ai";
 import { MdModeEdit } from "react-icons/md";
+import AddBox from "@material-ui/icons/AddBox";
+import IndeterminateCheckBox from "@material-ui/icons/IndeterminateCheckBox";
 
 function TaskInfo() {
   const [open, setOpen] = useState(false);
@@ -153,6 +155,15 @@ function TaskInfo() {
               Users can edit their tasks by clicking on the <MdModeEdit /> icon.
               The task insertion form will appear, and the task will be updated
               after the user makes the necessary update.
+            </p>
+            <p>
+              <h2>Task Filtering</h2>
+              Users can choose to filter out the tasks by selecting the relevant categories under 'Category Filter'.
+              <br></br>
+              <br></br>
+              Clicking on <AddBox /> would cause tasks from all categories will be displayed on the TaskList.
+              <br></br>
+              Clicking on <IndeterminateCheckBox /> would cause the Task Dashboard to display no tasks, and reset the buttons to unselected.
             </p>
             <p>
               <h2>Task Sorting</h2>

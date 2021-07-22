@@ -5,6 +5,7 @@ import { GrRevert } from "react-icons/gr";
 import sendMailReminder from "../TaskManager/SendMail";
 import updateHistory from "./updateHistory";
 import addTask from "../TaskManager/AddTask";
+import TaskHistoryInfo from "./TaskHistoryInfo.js";
 
 function TaskHistory() {
   const [history, setHistory] = useState([]);
@@ -76,6 +77,14 @@ function TaskHistory() {
       <main>
         <h2>
           <strong>Task History</strong>
+          <TaskHistoryInfo
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              marginLeft: "1rem",
+              fontSize: "medium",
+            }}
+          />
         </h2>
         {history.length <= 0 ? (
           "History is empty"

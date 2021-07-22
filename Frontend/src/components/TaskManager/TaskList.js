@@ -40,6 +40,8 @@ export default function TaskList() {
   const [busy, setBusy] = useState(false);
   const [sort, setSort] = useState("deadline");
   const [category, setCategory] = useState([]);
+  const [filter, setFilter] = useState([]);
+
   // Global variables from Firebase
   const uid = firebase.auth().currentUser?.uid;
   const db = firebase.firestore();
@@ -49,7 +51,7 @@ export default function TaskList() {
     const docRef = db.collection("/users").doc(uid);
     docRef.onSnapshot((doc) => {
       setTasks(doc.data().tasks);
-      setSort(doc.data().sortView);
+      setSort(doc.data().sortView);  
       setCategory(
         doc.data().category.map((pair) => {
           return pair.name;
@@ -60,19 +62,19 @@ export default function TaskList() {
     setLoaded(true);
   }, [db, uid]);
 
-  // UNFINISHED!!! This hook is for monitoring all the checks.
-  const [checked, setChecked] = useState([]);
+  // The hook to make sure the checkboxes are checked or not.
+  const [checkBoxList, setCheckBoxList] = useState([]);
 
+  // This is for updating the checkboxes. Whenever 'category' or 'filter' is updated,
+  // an update to the CheckBoxList is made.
   useEffect(() => {
-    var temp = {};
-    category.forEach((item) => {
-      temp[item] = true;
+    var checked = [];
+    category.forEach((cat) => {
+      checked = [...checked, filter.includes(cat)];
     });
-    setChecked(temp);
-  }, []);
-
-  // This hook is for filtering by Category.
-  const [filter, setFilter] = useState(category);
+    console.log(checked);
+    setCheckBoxList(checked);
+  }, [category, filter]);
 
   // This function is for when 'Choose no category' is clicked.
   function chooseNone() {
@@ -81,25 +83,26 @@ export default function TaskList() {
 
   // This function is for when 'Choose all category' is clicked.
   function chooseAll() {
-    // UNFINISHED!!! tick all the options available.
     setFilter(category);
   }
 
   // This function is for filtering when a certain category button is activated.
-  function addFilter(addedCategory) {
+  function addFilter(addedCategory, index) { 
+    console.log('Number: '+index+', Array: '+checkBoxList[index]);
     const newFilter = [...filter.slice(0), addedCategory];
+    // By updating the Filter, setEffect will automatically update CheckBoxList.
     setFilter(newFilter);
   }
 
   // This function is for filtering when a certain category button is deactivated.
   function deleteFilter(deletedCategory) {
     const newFilter = filter.filter((cat) => cat !== deletedCategory);
+    // By updating the Filter, setEffect will automatically update CheckBoxList.
     setFilter(newFilter);
   }
 
   // Updates the local copy of array when database array change
   useEffect(() => {
-    setDisplay([]);
     var newDisp = [];
     tasks.forEach((current, index) => {
       newDisp = [...newDisp, { taskIndex: index, task: current }];
@@ -345,22 +348,21 @@ export default function TaskList() {
               overflowX: "auto",
             }}
           >
-            {category.map((cat) => (
-              <div style={{ justifyContent: "space-evenly" }}>
+            {category.map((cat, index) => (
+              <div id="checkbox" style={{ justifyContent: "space-evenly" }}>
                 <FormControlLabel
                   control={
                     <Checkbox
                       name={cat}
+                      checked={checkBoxList[index]}
                       icon={<FavoriteBorder />}
                       checkedIcon={<Favorite />}
-                      // check =
                       onClick={(event) =>
                         event.target.checked
-                          ? addFilter(event.target.value)
+                          ? addFilter(event.target.value, index)
                           : deleteFilter(event.target.value)
                       }
                       value={cat}
-                      defaultChecked={false}
                     />
                   }
                   label={cat}
@@ -374,9 +376,7 @@ export default function TaskList() {
           <Button
             onClick={() => {
               console.log(
-                "Tasks: " + tasks.length,
-                "Display: " + display.length,
-                "Filter: " + filter.length
+                "Array: " + checkBoxList.map(x => x)
               );
             }}
           >
