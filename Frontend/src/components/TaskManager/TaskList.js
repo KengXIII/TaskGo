@@ -7,8 +7,6 @@ import {
   Tooltip,
   Input,
   TextField,
-  FormControlLabel,
-  Checkbox,
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import Radio from "@material-ui/core/Radio";
@@ -30,10 +28,9 @@ import SortTask from "./SortTask";
 import AddHistory from "../TaskHistory/AddHistory";
 import addTask from "./AddTask";
 import sendMailReminder from "./SendMail";
-import Favorite from "@material-ui/icons/Favorite";
-import FavoriteBorder from "@material-ui/icons/FavoriteBorder";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
+import NotInterestedSharpIcon from "@material-ui/icons/NotInterestedSharp";
 
 export default function TaskList() {
   const [tasks, setTasks] = useState([]);
@@ -93,7 +90,7 @@ export default function TaskList() {
   }
 
   // This function is for filtering when a certain category button is activated.
-  function addFilter(addedCategory, index) {
+  function addFilter(addedCategory) {
     const newFilter = [...filter.slice(0), addedCategory];
     // By updating the Filter, setEffect will automatically update CheckBoxList.
     setFilter(newFilter);
@@ -243,7 +240,31 @@ export default function TaskList() {
         buttons: [
           {
             label: "Yes",
-            onClick: () => handleDeleteIntervalTask(index),
+            onClick: () => {
+              handleDeleteIntervalTask(index);
+              handleDeleteTask(index);
+            },
+          },
+          {
+            label: "Only this",
+            onClick: () => handleDeleteTask(index),
+          },
+          {
+            label: "No",
+            onClick: () => {
+              return;
+            },
+          },
+        ],
+      });
+    } else {
+      confirmAlert({
+        title: "Delete Single Task",
+        message: "Do you want to delete this task?",
+        buttons: [
+          {
+            label: "Yes",
+            onClick: () => handleDeleteTask(index),
           },
           {
             label: "No",
@@ -254,7 +275,6 @@ export default function TaskList() {
         ],
       });
     }
-    handleDeleteTask(index);
   }
 
   // Creating our Coloured Radio buttons...
@@ -385,37 +405,89 @@ export default function TaskList() {
             }}
           >
             {category.map((cat, index) => (
-              <div id="checkbox" style={{ justifyContent: "space-evenly" }}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      name={cat}
-                      checked={checkBoxList[index] || ""}
-                      icon={<FavoriteBorder />}
-                      checkedIcon={<Favorite />}
-                      onClick={(event) =>
-                        event.target.checked
-                          ? addFilter(event.target.value, index)
-                          : deleteFilter(event.target.value)
+              <div
+                id="checkbox"
+                style={
+                  checkBoxList[index]
+                    ? index % 3 === 0
+                      ? {
+                          justifyContent: "space-evenly",
+                          backgroundColor: "#CAE5C7",
+                          marginRight: "30px",
+                          borderRadius: "10px",
+                          border: "solid",
+                          borderColor: "#CAE5C7",
+                          padding: "10px",
+                          fontSize: "18px",
+                          cursor: "pointer",
+                        }
+                      : index % 3 === 1
+                      ? {
+                          justifyContent: "space-evenly",
+                          backgroundColor: "lightblue",
+                          marginRight: "30px",
+                          borderRadius: "10px",
+                          border: "solid",
+                          borderColor: "lightblue",
+                          padding: "10px",
+                          fontSize: "18px",
+                          cursor: "pointer",
+                        }
+                      : {
+                          justifyContent: "space-evenly",
+                          backgroundColor: "#F4B78B",
+                          marginRight: "30px",
+                          borderRadius: "10px",
+                          border: "solid",
+                          borderColor: "#F4B78B",
+                          padding: "10px",
+                          fontSize: "18px",
+                          cursor: "pointer",
+                        }
+                    : index % 3 === 0
+                    ? {
+                        justifyContent: "space-evenly",
+                        marginRight: "30px",
+                        borderRadius: "10px",
+                        padding: "10px",
+                        border: "solid",
+                        borderColor: "#CAE5C7",
+                        fontSize: "18px",
+                        cursor: "pointer",
                       }
-                      value={cat}
-                    />
+                    : index % 3 === 1
+                    ? {
+                        justifyContent: "space-evenly",
+                        marginRight: "30px",
+                        borderRadius: "10px",
+                        padding: "10px",
+                        border: "solid",
+                        borderColor: "lightblue",
+                        fontSize: "18px",
+                        cursor: "pointer",
+                      }
+                    : {
+                        justifyContent: "space-evenly",
+                        marginRight: "30px",
+                        borderRadius: "10px",
+                        padding: "10px",
+                        border: "solid",
+                        borderColor: "#F4B78B",
+                        fontSize: "18px",
+                        cursor: "pointer",
+                      }
+                }
+              >
+                <div
+                  onClick={() =>
+                    !checkBoxList[index] ? addFilter(cat) : deleteFilter(cat)
                   }
-                  label={cat}
-                />
+                >
+                  {cat === "" ? <NotInterestedSharpIcon /> : cat}
+                </div>
               </div>
             ))}
           </div>
-        </div>
-
-        <div>
-          <Button
-            onClick={() => {
-              console.log(display);
-            }}
-          >
-            Debug
-          </Button>
         </div>
 
         <h2>

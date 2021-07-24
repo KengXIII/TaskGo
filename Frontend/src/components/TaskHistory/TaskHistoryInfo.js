@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button, Dialog, DialogTitle } from "@material-ui/core";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
-import { BiCalendarPlus, BiMessageSquareDetail } from "react-icons/bi";
+import { BiMessageSquareDetail } from "react-icons/bi";
 import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
 import { TiTickOutline } from "react-icons/ti";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -51,7 +51,7 @@ function TaskHistoryInfo() {
           >
             <p>
               <h2>Task History Dashboard</h2>
-              The Task History page displays  
+              The Task History page displays
               <br></br>
               <br></br>
               <strong>Name</strong>
@@ -158,12 +158,16 @@ function TaskHistoryInfo() {
             </p>
             <p>
               <h2>Task Filtering</h2>
-              Users can choose to filter out the tasks by selecting the relevant categories under 'Category Filter'.
+              Users can choose to filter out the tasks by selecting the relevant
+              categories under 'Category Filter'.
               <br></br>
               <br></br>
-              Clicking on <AddBox /> would cause tasks from all categories will be displayed on the TaskList.
+              Clicking on <AddBox /> would cause tasks from all categories will
+              be displayed on the TaskList.
               <br></br>
-              Clicking on <IndeterminateCheckBox /> would cause the Task Dashboard to display no tasks, and reset the buttons to unselected.
+              Clicking on <IndeterminateCheckBox /> would cause the Task
+              Dashboard to display no tasks, and reset the buttons to
+              unselected.
             </p>
             <p>
               <h2>Task Sorting</h2>

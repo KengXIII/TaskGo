@@ -120,10 +120,10 @@ app.post("/send_mail", cors(), (req, res) => {
   res.end();
 });
 
-app.post("/cancel_mail", (req, res) => {
+app.post("/cancel_cron", (req, res) => {
   try {
     schedule.scheduledJobs[req.body.taskId].cancel();
-    console.log("Success: Email cancelled");
+    console.log("Success: Schedule cancelled");
   } catch (TypeError) {
   } finally {
     res.end();

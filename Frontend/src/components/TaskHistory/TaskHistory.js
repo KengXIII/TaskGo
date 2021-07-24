@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { firebase } from "@firebase/app";
 import { AiOutlineDelete } from "react-icons/ai";
 import { GrRevert } from "react-icons/gr";
-import sendMailReminder from "../TaskManager/SendMail";
 import updateHistory from "./updateHistory";
 import addTask from "../TaskManager/AddTask";
 import TaskHistoryInfo from "./TaskHistoryInfo.js";

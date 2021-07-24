@@ -2,7 +2,7 @@ import axios from "axios";
 
 export default function cancelCron(taskId) {
   axios
-    .post("http://localhost:4000/cancel_mail", { taskId: taskId })
+    .post("http://localhost:4000/cancel_cron", { taskId: taskId })
     .then((response) => {
       console.log(response);
     })

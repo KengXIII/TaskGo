@@ -117,13 +117,20 @@ function TaskForm() {
       return;
     }
 
+    var inputCategory;
+    if (!newTaskCategory || /^\s*$/.test(newTaskCategory)) {
+      inputCategory = "";
+    } else {
+      inputCategory = newTaskCategory;
+    }
+
     // Adding task into database
     if (intervalData.interval) {
       addIntervaltask(
         newTaskName,
         newTaskPriority,
         insertionDeadline,
-        newTaskCategory,
+        inputCategory,
         inputDescription,
         taskId,
         interval * 86400000, // should use interval
@@ -134,7 +141,7 @@ function TaskForm() {
         newTaskName,
         newTaskPriority,
         insertionDeadline,
-        newTaskCategory,
+        inputCategory,
         inputDescription,
         taskId
       );
@@ -343,11 +350,14 @@ function TaskForm() {
                     marginBottom: "10px",
                   }}
                 >
-                  <span style={{ flex: "28%" }}>Interval End</span>
+                  <span style={{ flex: "28%" }}>
+                    Interval End<label style={{ color: "red" }}>*</label>
+                  </span>
 
                   <div style={{ flex: "80%" }}>
                     <TextField
                       // Input for the interval end.
+                      required={true}
                       className="interval-end"
                       type="date"
                       value={intervalEnd}
@@ -364,10 +374,13 @@ function TaskForm() {
                     alignItems: "center",
                   }}
                 >
-                  <span style={{ flex: "28%" }}>Repeat in</span>
+                  <span style={{ flex: "28%" }}>
+                    Repeat in<label style={{ color: "red" }}>*</label>
+                  </span>
                   <div style={{ flex: "80%" }}>
                     <Input
                       // Input how many days between each task
+                      required={true}
                       type="number"
                       style={{ marginRight: "1rem", paddingLeft: "3px" }}
                       placeholder="days"

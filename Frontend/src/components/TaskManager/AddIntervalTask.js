@@ -15,11 +15,9 @@ export default function addIntervaltask(
   const db = firebase.firestore();
   const docRef = db.collection("/users").doc(uid);
 
-  var email;
   var notification;
 
   docRef.get().then((doc) => {
-    email = doc.data().settings[0].email;
     notification = doc.data().settings[0].notification;
     console.log(notification);
   });

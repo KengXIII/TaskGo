@@ -28,7 +28,7 @@ function Settings() {
       });
     });
     setLoaded(true);
-  }, []);
+  }, [docRef]);
 
   function handleChange(event) {
     setNewSettings({
