@@ -39,12 +39,12 @@ app.get("/", (req, res) => {
 });
 
 app.use(function (req, res, next) {
-  res.setHeader(
+  res.header(
     "Access-Control-Allow-Origin",
     //"https://task-go-kengxiii.vercel.app"
     "localhost:3000/dashboard"
   );
-  res.setHeader(
+  res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
   );
@@ -138,57 +138,91 @@ app.post("/interval_task", (req, res) => {
   const count = req.body.count;
   const deadline = new Date(newTask.deadline);
   const name = req.body.name;
-  const email = req.body.email;
+  var email;
+  var notification;
+  var emailPrior;
+
   console.log(
     `-------------------${uid} added interval job -----------------------`
   );
 
   var docRef = db.collection("/users").doc(uid);
+  docRef
+    .get()
+    .then((doc) => {
+      const tasks = doc.data().tasks;
+      notification = doc.data().settings[0].notification;
+      emailPrior = doc.data().settings[0].reminderDays;
+      email = doc.data().settings[0].email;
+      const newTasks = [
+        ...tasks.slice(0),
+        {
+          name: newTask.name,
+          priority: newTask.priority,
+          isComplete: false,
+          dateCreated: new Date(),
+          dateCompleted: "",
+          deadline: deadline,
+          category: newTask.category,
+          description: newTask.description,
+          taskId: newTask.taskId,
+          interval: true,
+        },
+      ];
 
-  docRef.get().then((doc) => {
-    const tasks = doc.data().tasks;
+      var storedCategory = doc.data().category;
+      var newStoredCategory;
+      if (
+        storedCategory.some((pair) => {
+          return pair.name === newTask.category;
+        })
+      ) {
+        newStoredCategory = storedCategory.map((pair) => {
+          return pair.name === newTask.category
+            ? { name: pair.name, value: pair.value + 1 }
+            : { name: pair.name, value: pair.value };
+        });
+      } else {
+        newStoredCategory = [
+          ...storedCategory,
+          { name: newTask.category, value: 1 },
+        ];
+      }
+      newStoredCategory = newStoredCategory.sort((pair1, pair2) => {
+        return pair1.name < pair2.name ? -1 : 1;
+      });
+      docRef.update({ category: newStoredCategory });
+      docRef.update({ tasks: newTasks });
+    })
+    .then(() => {
+      // Scheduling the email
 
-    const newTasks = [
-      ...tasks.slice(0),
-      {
-        name: newTask.name,
-        priority: newTask.priority,
-        isComplete: false,
-        dateCreated: new Date(),
-        dateCompleted: "",
-        deadline: deadline,
-        category: newTask.category,
-        description: newTask.description,
-        taskId: newTask.taskId,
-        interval: true,
-      },
-    ];
-    docRef.update({ tasks: newTasks });
-  });
+      // email prior is the number of days declared by user before deadline
+      const emailDate = new Date(deadline.getTime() - emailPrior * 86400000);
 
-  // Scheduling the email
-  const emailPrior = 86400000;
-  const emailDate = new Date(deadline.getTime() - emailPrior);
-
-  axios.post("http://localhost:4000/send_mail", {
-    taskName: newTask.name,
-    date: deadline.toDateString(),
-    time: `${deadline.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    })}`,
-    name: name,
-    email: email,
-    emailTime: emailDate,
-    taskId: newTask.taskId,
-  });
+      // Email will only be requested only if they have the setting turned on
+      if (notification) {
+        axios.post("http://localhost:4000/send_mail", {
+          taskName: newTask.name,
+          date: deadline.toDateString(),
+          time: `${deadline.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}`,
+          name: name,
+          email: email,
+          emailTime: emailDate,
+          taskId: newTask.taskId,
+        });
+      }
+    });
 
   // Schedule next task only if the deadline of next task is
   // before intervalEnd
   if (new Date(deadline.getTime() + interval) < new Date(intervalEnd)) {
     console.log("scheduling next", new Date(deadline.getTime() - 86400000));
-    const createTime = new Date().toISOString();
-
+    const createTime = new Date(deadline.getTime() - 86400000).toISOString();
+    console.log(`${uid}${createTime}`);
     // Schedule task 1 day before the previous task is due
     schedule.scheduleJob(
       `${uid}${createTime}`,
@@ -232,11 +266,12 @@ cron.schedule("0 0 0 * * *", function () {
       (querySnapshot) => {
         querySnapshot.forEach((doc) => {
           console.log(doc.id);
+          var settings = doc.data().settings[0].historyCleanUp * 864000000;
           var history = doc.data().history;
           var current = new Date();
           var newHistory = history.filter(
             (task) =>
-              new Date(current.getTime() - 604800000) <
+              new Date(current.getTime() - settings) <
               task.dateCompleted.toDate()
           );
           var originalLength = history.length;

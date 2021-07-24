@@ -1,4 +1,5 @@
 import firebase from "@firebase/app";
+import sendMailReminder from "./SendMail";
 import SortTask from "./SortTask";
 import updateTasks from "./updateTasks";
 
@@ -22,6 +23,12 @@ export default function addTask(
       tasks = doc.data().tasks;
       storedCategory = doc.data().category;
       sortView = doc.data().sortView;
+
+      // Verify notification settings
+      const notification = doc.data().settings[0].notification;
+      const email = doc.data().settings[0].email;
+
+      console.log(notification);
       const newTasks = [
         ...tasks.slice(0),
         {
@@ -57,6 +64,10 @@ export default function addTask(
       docRef.update({ category: newStoredCategory });
 
       updateTasks(newTasks);
+
+      if (notification) {
+        sendMailReminder(taskId, deadline, name, email);
+      }
     })
     .then(() => {
       SortTask(sortView);

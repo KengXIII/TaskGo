@@ -11,6 +11,19 @@ export default function addIntervaltask(
   interval,
   intervalEnd
 ) {
+  const uid = firebase.auth().currentUser?.uid;
+  const db = firebase.firestore();
+  const docRef = db.collection("/users").doc(uid);
+
+  var email;
+  var notification;
+
+  docRef.get().then((doc) => {
+    email = doc.data().settings[0].email;
+    notification = doc.data().settings[0].notification;
+    console.log(notification);
+  });
+
   const newTask = {
     name: name,
     priority: priority,
@@ -33,6 +46,5 @@ export default function addIntervaltask(
       intervalEnd: intervalEnd,
       count: 1,
       name: firebase.auth().currentUser.displayName,
-      email: firebase.auth().currentUser.email,
     });
 }

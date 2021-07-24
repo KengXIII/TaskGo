@@ -56,8 +56,6 @@ function TaskHistory() {
         task.taskId
       );
 
-      sendMailReminder(task.taskId, task.deadline.toDate(), task.name);
-
       // Removing from history
       const newHistory = [
         ...history.slice(0, index),

@@ -22,7 +22,7 @@ import { TiTickOutline } from "react-icons/ti";
 import { MdModeEdit } from "react-icons/md";
 import AddBox from "@material-ui/icons/AddBox";
 import IndeterminateCheckBox from "@material-ui/icons/IndeterminateCheckBox";
-import cancelMail from "./CancelMail";
+import cancelMail from "./CancelCron";
 import TaskForm from "./TaskForm";
 import TaskInfo from "./TaskInfo";
 import updateTasks from "./updateTasks";
@@ -32,6 +32,8 @@ import addTask from "./AddTask";
 import sendMailReminder from "./SendMail";
 import Favorite from "@material-ui/icons/Favorite";
 import FavoriteBorder from "@material-ui/icons/FavoriteBorder";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
 
 export default function TaskList() {
   const [tasks, setTasks] = useState([]);
@@ -51,8 +53,13 @@ export default function TaskList() {
     const docRef = db.collection("/users").doc(uid);
     docRef.onSnapshot((doc) => {
       setTasks(doc.data().tasks);
-      setSort(doc.data().sortView);  
+      setSort(doc.data().sortView);
       setCategory(
+        doc.data().category.map((pair) => {
+          return pair.name;
+        })
+      );
+      setFilter(
         doc.data().category.map((pair) => {
           return pair.name;
         })
@@ -72,7 +79,6 @@ export default function TaskList() {
     category.forEach((cat) => {
       checked = [...checked, filter.includes(cat)];
     });
-    console.log(checked);
     setCheckBoxList(checked);
   }, [category, filter]);
 
@@ -87,8 +93,7 @@ export default function TaskList() {
   }
 
   // This function is for filtering when a certain category button is activated.
-  function addFilter(addedCategory, index) { 
-    console.log('Number: '+index+', Array: '+checkBoxList[index]);
+  function addFilter(addedCategory, index) {
     const newFilter = [...filter.slice(0), addedCategory];
     // By updating the Filter, setEffect will automatically update CheckBoxList.
     setFilter(newFilter);
@@ -218,6 +223,40 @@ export default function TaskList() {
     }
   }
 
+  function handleDeleteIntervalTask(index) {
+    const previousTask = tasks[display[index].taskIndex];
+    const createTime = new Date(
+      previousTask.deadline.toDate().getTime() - 86400000
+    ).toISOString();
+    const taskId = `${uid}${createTime}`;
+    console.log(taskId);
+    cancelMail(taskId);
+  }
+
+  // Function will fire when interval task is being deleted
+  function checkDelete(index) {
+    const originalIndex = display[index].taskIndex;
+    if (tasks[originalIndex].interval) {
+      confirmAlert({
+        title: "Delete Interval Task",
+        message: "Do you want to delete the future scheduled task?",
+        buttons: [
+          {
+            label: "Yes",
+            onClick: () => handleDeleteIntervalTask(index),
+          },
+          {
+            label: "No",
+            onClick: () => {
+              return;
+            },
+          },
+        ],
+      });
+    }
+    handleDeleteTask(index);
+  }
+
   // Creating our Coloured Radio buttons...
   const P3Radio = withStyles({
     root: {
@@ -337,9 +376,6 @@ export default function TaskList() {
           />
         </h2>
 
-        {/* <Button style={{ cursor: "pointer" }} onClick={() => addFilter("??")}>
-          All other categories belong here.
-        </Button> */}
         <div>
           <div
             style={{
@@ -354,7 +390,7 @@ export default function TaskList() {
                   control={
                     <Checkbox
                       name={cat}
-                      checked={checkBoxList[index]}
+                      checked={checkBoxList[index] || ""}
                       icon={<FavoriteBorder />}
                       checkedIcon={<Favorite />}
                       onClick={(event) =>
@@ -375,9 +411,7 @@ export default function TaskList() {
         <div>
           <Button
             onClick={() => {
-              console.log(
-                "Array: " + checkBoxList.map(x => x)
-              );
+              console.log(display);
             }}
           >
             Debug
@@ -494,7 +528,7 @@ export default function TaskList() {
                     </td>
                     <td style={{ textAlign: "center", cursor: "pointer" }}>
                       <AiOutlineDelete
-                        onClick={() => handleDeleteTask(index)}
+                        onClick={() => checkDelete(index)}
                         className="delete-icon"
                       />
                     </td>

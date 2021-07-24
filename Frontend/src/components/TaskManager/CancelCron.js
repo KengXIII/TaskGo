@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export default function cancelMail(taskId) {
+export default function cancelCron(taskId) {
   axios
     .post("http://localhost:4000/cancel_mail", { taskId: taskId })
     .then((response) => {

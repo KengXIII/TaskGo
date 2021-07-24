@@ -3,6 +3,7 @@ import "./homepage.css";
 import { Button } from "@material-ui/core";
 import { FirebaseAuthConsumer } from "@react-firebase/auth";
 import AccountBox from "@material-ui/icons/AccountBox";
+import initializeSettings from "../components/Settings/InitializeSettings";
 
 function Homepage() {
   const handleGoogleSignIn = (firebase) => {
@@ -11,21 +12,7 @@ function Homepage() {
       .auth()
       .signInWithPopup(googleAuthProvider)
       .then(() => {
-        const uid = firebase.auth().currentUser?.uid;
-        const db = firebase.firestore();
-        const docRef = db.collection("/users").doc(uid);
-        docRef.get().then((doc) => {
-          if (!doc.exists) {
-            db.collection("/users")
-              .doc(uid)
-              .set({
-                tasks: [],
-                history: [],
-                categories: [],
-                sortView: "deadline",
-              });
-          }
-        });
+        initializeSettings();
       });
   };
 

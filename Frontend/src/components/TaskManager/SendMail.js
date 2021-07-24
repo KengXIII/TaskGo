@@ -1,7 +1,7 @@
 import axios from "axios";
 import { firebase } from "@firebase/app";
 
-export default function sendMailReminder(taskId, deadline, taskName) {
+export default function sendMailReminder(taskId, deadline, taskName, email) {
   const emailPrior = 86400000;
   const emailDate = new Date(deadline.getTime() - emailPrior);
   axios
@@ -14,7 +14,7 @@ export default function sendMailReminder(taskId, deadline, taskName) {
         minute: "2-digit",
       })}`,
       name: firebase.auth().currentUser.displayName,
-      email: firebase.auth().currentUser.email,
+      email: email,
       emailTime: emailDate,
       taskId: taskId,
     })

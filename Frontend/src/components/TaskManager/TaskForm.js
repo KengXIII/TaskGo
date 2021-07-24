@@ -14,7 +14,6 @@ import Radio from "@material-ui/core/Radio";
 import { withStyles } from "@material-ui/core/styles";
 import { green, orange, red } from "@material-ui/core/colors";
 import { BiCalendarPlus } from "react-icons/bi";
-import sendMailReminder from "./SendMail";
 import addTask from "./AddTask";
 import addIntervaltask from "./AddIntervalTask";
 
@@ -40,11 +39,13 @@ function TaskForm() {
     setNewTaskCategory("");
     setOpen(false);
     setIntervalData({ interval: false, mode: "Single" });
+    setIntervalDay("");
+    setIntervalEnd("");
   };
 
   // Values for interval task
   const [intervalEnd, setIntervalEnd] = useState("");
-  const [interval, setInterval] = useState();
+  const [interval, setIntervalDay] = useState("");
 
   const [intervalData, setIntervalData] = useState({
     interval: false,
@@ -64,9 +65,6 @@ function TaskForm() {
       });
     }
   };
-
-  // Flag used to determined if email should be sent
-  var send = false;
 
   // Creating our Coloured Radio buttons...
   const P3Radio = withStyles({
@@ -117,8 +115,6 @@ function TaskForm() {
     // Check if task contains only spaces, no mail will be sent if true
     if (!newTaskName || /^\s*$/.test(newTaskName)) {
       return;
-    } else {
-      send = true;
     }
 
     // Adding task into database
@@ -130,8 +126,8 @@ function TaskForm() {
         newTaskCategory,
         inputDescription,
         taskId,
-        60000, // should use interval
-        new Date(2021, 11, 11) // should use new Date(intervalEnd)
+        interval * 86400000, // should use interval
+        new Date(intervalEnd) // should use new Date(intervalEnd)
       );
     } else {
       addTask(
@@ -142,11 +138,6 @@ function TaskForm() {
         inputDescription,
         taskId
       );
-
-      if (send) {
-        sendMailReminder(taskId, insertionDeadline, newTaskName);
-        send = false;
-      }
     }
 
     setNewTaskName("");
@@ -154,6 +145,8 @@ function TaskForm() {
     setNewTaskDescription("");
     setNewTaskPriority("3");
     setNewTaskCategory("");
+    setIntervalDay("");
+    setIntervalEnd("");
   }
 
   return (
@@ -170,7 +163,9 @@ function TaskForm() {
         open={open}
         onClose={handleClose}
         aria-labelledby="form-dialog-title"
-        style={{ alignContent: "center", padding: "px" }}
+        style={{ alignContent: "center" }}
+        maxWidth="xs"
+        fullWidth={true}
       >
         <DialogTitle id="form-dialog-title">
           <label style={{ fontSize: "30px" }}>Add Task</label>
@@ -186,140 +181,207 @@ function TaskForm() {
             style={{ float: "right" }}
           />
         </DialogTitle>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            padding: "0px 30px 30px 30px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              marginRight: "10px",
-            }}
-          >
-            <p>
-              Name<label style={{ color: "red" }}>*</label>
-            </p>
-            <p>
-              Deadline<label style={{ color: "red" }}>*</label>
-            </p>
-            <p>
-              Priority<label style={{ color: "red" }}>*</label>
-            </p>
-            <p>Category</p>
-            <p>Description</p>
-            <p>Interval End</p>
-            <p>Repeat in</p>
-          </div>
-
+        <div style={{ padding: "0px 30px 30px 30px" }}>
           <form
             onSubmit={handleAddTask}
             style={{
-              display: "flex",
-              flexDirection: "column",
               marginTop: "10px",
             }}
           >
-            <Input
-              // Input for the task name.
-              required={true}
-              // Ensures that the cursor is on the textfield when component loads
-              autoFocus={true}
-              className="task-name-field"
-              style={{ paddingLeft: "3px" }}
-              placeholder="Enter Task Name"
-              value={newTaskName}
-              inputProps={{ "aria-label": "name" }}
-              onChange={(event) => setNewTaskName(event.target.value)}
-            />
-            <br></br>
-            <TextField
-              // Input for the deadline.
-              required={true}
-              inputProps={{
-                min: new Date(Date.now() + 28800000).toJSON().slice(0, 16),
-              }}
-              className="task-deadline-field"
-              type="datetime-local"
-              style={{ paddingLeft: "3px", width: "300px" }}
-              value={newTaskDeadline}
-              onChange={(event) => setNewTaskDeadline(event.target.value)}
-            />
-            <br></br>
             <div
-            // Priority is selected via 3 Radio buttons. Default selected radio is Priority 3 Radio.
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: "10px",
+              }}
             >
-              <P1Radio
-                checked={newTaskPriority === "1"}
-                onClick={(event) => setNewTaskPriority(event.target.value)}
-                value="1"
-                name="radio-button"
-                inputProps={{ "aria-label": "Radio A" }}
-                size="small"
-              />
-              <P2Radio
-                checked={newTaskPriority === "2"}
-                onClick={(event) => setNewTaskPriority(event.target.value)}
-                value="2"
-                name="radio-button"
-                inputProps={{ "aria-label": "Radio B" }}
-                size="small"
-              />
-              <P3Radio
-                checked={newTaskPriority === "3"}
-                onClick={(event) => setNewTaskPriority(event.target.value)}
-                value="3"
-                name="radio-button"
-                inputProps={{ "aria-label": "Radio C" }}
-                size="small"
-              />
+              <span style={{ flex: "28%" }}>
+                Name<label style={{ color: "red" }}>*</label>
+              </span>
+              <div style={{ flex: "80%" }}>
+                <Input
+                  // Input for the task name.
+                  required={true}
+                  // Ensures that the cursor is on the textfield when component loads
+                  autoFocus={true}
+                  className="task-name-field"
+                  style={{ paddingLeft: "3px" }}
+                  placeholder="Enter Task Name"
+                  value={newTaskName}
+                  inputProps={{ "aria-label": "name" }}
+                  onChange={(event) => setNewTaskName(event.target.value)}
+                  fullWidth={true}
+                />
+              </div>
             </div>
-            <br></br>
-            <Input
-              // Input a task category.
-              className="task-category"
-              type="text"
-              style={{ marginRight: "1rem", paddingLeft: "3px" }}
-              placeholder="Optional"
-              value={newTaskCategory}
-              inputProps={{ "aria-label": "description" }}
-              onChange={(event) => setNewTaskCategory(event.target.value)}
-            />
-            <br></br>
-            <Input
-              // Input a short description for the task.
-              className="task-description"
-              type="text"
-              style={{ marginRight: "1rem", paddingLeft: "3px" }}
-              placeholder="Optional"
-              value={newTaskDescription}
-              inputProps={{ "aria-label": "description" }}
-              onChange={(event) => setNewTaskDescription(event.target.value)}
-            />
-            <br></br>
-            <TextField
-              // Input for the interval end.
-              className="interval-end"
-              type="date"
-              style={{ paddingLeft: "3px", width: "300px" }}
-              value={intervalEnd}
-              onChange={(event) => setIntervalEnd(event.target.value)}
-            />
-            <br></br>
-            <Input
-              // Input a short description for the task.
-              type="number"
-              style={{ marginRight: "1rem", paddingLeft: "3px" }}
-              placeholder="days"
-              value={interval}
-              inputProps={{ "aria-label": "description" }}
-              onChange={(event) => setInterval(event.target.value)}
-            />
-            <br></br>
 
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: "10px",
+              }}
+            >
+              <span style={{ flex: "28%" }}>
+                Deadline<label style={{ color: "red" }}>*</label>
+              </span>
+              <div style={{ flex: "80%" }}>
+                <TextField
+                  // Input for the deadline.
+                  required={true}
+                  inputProps={{
+                    min: new Date(Date.now() + 28800000).toJSON().slice(0, 16),
+                  }}
+                  className="task-deadline-field"
+                  type="datetime-local"
+                  value={newTaskDeadline}
+                  onChange={(event) => setNewTaskDeadline(event.target.value)}
+                  fullWidth={true}
+                />
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: "10px",
+              }}
+            >
+              <span style={{ flex: "28%" }}>
+                Priority<label style={{ color: "red" }}>*</label>
+              </span>
+
+              <div style={{ flex: "80%" }}>
+                <P1Radio
+                  checked={newTaskPriority === "1"}
+                  onClick={(event) => setNewTaskPriority(event.target.value)}
+                  value="1"
+                  name="radio-button"
+                  inputProps={{ "aria-label": "Radio A" }}
+                  size="small"
+                />
+                <P2Radio
+                  checked={newTaskPriority === "2"}
+                  onClick={(event) => setNewTaskPriority(event.target.value)}
+                  value="2"
+                  name="radio-button"
+                  inputProps={{ "aria-label": "Radio B" }}
+                  size="small"
+                />
+                <P3Radio
+                  checked={newTaskPriority === "3"}
+                  onClick={(event) => setNewTaskPriority(event.target.value)}
+                  value="3"
+                  name="radio-button"
+                  inputProps={{ "aria-label": "Radio C" }}
+                  size="small"
+                />
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: "10px",
+              }}
+            >
+              <span style={{ flex: "28%" }}>Category</span>
+              <div style={{ flex: "80%" }}>
+                <Input
+                  // Input a task category.
+                  className="task-category"
+                  type="text"
+                  style={{ marginRight: "1rem", paddingLeft: "3px" }}
+                  placeholder="Optional"
+                  value={newTaskCategory}
+                  inputProps={{ "aria-label": "description" }}
+                  onChange={(event) => setNewTaskCategory(event.target.value)}
+                  fullWidth={true}
+                />
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: "10px",
+              }}
+            >
+              <span style={{ flex: "28%" }}>Description</span>
+              <div style={{ flex: "80%" }}>
+                <Input
+                  // Input a short description for the task.
+                  className="task-description"
+                  type="text"
+                  style={{ marginRight: "1rem", paddingLeft: "3px" }}
+                  placeholder="Optional"
+                  value={newTaskDescription}
+                  inputProps={{ "aria-label": "description" }}
+                  onChange={(event) =>
+                    setNewTaskDescription(event.target.value)
+                  }
+                  fullWidth={true}
+                />
+              </div>
+            </div>
+
+            {intervalData.interval ? (
+              <div>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginBottom: "10px",
+                  }}
+                >
+                  <span style={{ flex: "28%" }}>Interval End</span>
+
+                  <div style={{ flex: "80%" }}>
+                    <TextField
+                      // Input for the interval end.
+                      className="interval-end"
+                      type="date"
+                      value={intervalEnd}
+                      onChange={(event) => setIntervalEnd(event.target.value)}
+                      fullWidth={true}
+                    />
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  <span style={{ flex: "28%" }}>Repeat in</span>
+                  <div style={{ flex: "80%" }}>
+                    <Input
+                      // Input how many days between each task
+                      type="number"
+                      style={{ marginRight: "1rem", paddingLeft: "3px" }}
+                      placeholder="days"
+                      value={interval}
+                      inputProps={{ "aria-label": "description", min: "1" }}
+                      onChange={(event) => setIntervalDay(event.target.value)}
+                      fullWidth={true}
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : null}
+
+            <br></br>
             <div
               style={{
                 display: "flex",
