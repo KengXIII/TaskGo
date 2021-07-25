@@ -5,8 +5,7 @@ export default function sendMailReminder(taskId, deadline, taskName, email) {
   const emailPrior = 86400000;
   const emailDate = new Date(deadline.getTime() - emailPrior);
   axios
-    //.post("https://stark-plains-53456.herokuapp.com/send_mail", {
-    .post("http://localhost:4000/send_mail", {
+    .post("https://stark-plains-53456.herokuapp.com/send_mail", {
       taskName: taskName,
       date: deadline.toDateString(),
       time: `${deadline.toLocaleTimeString([], {

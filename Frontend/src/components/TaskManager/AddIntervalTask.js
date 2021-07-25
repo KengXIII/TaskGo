@@ -1,5 +1,6 @@
 import axios from "axios";
 import { firebase } from "@firebase/app";
+import sendMailReminder from "./SendMail";
 
 export default function addIntervaltask(
   name,
@@ -16,9 +17,11 @@ export default function addIntervaltask(
   const docRef = db.collection("/users").doc(uid);
 
   var notification;
+  var email;
 
   docRef.get().then((doc) => {
     notification = doc.data().settings[0].notification;
+    email = doc.data().settings[0].email;
     console.log(notification);
   });
 
@@ -35,14 +38,16 @@ export default function addIntervaltask(
     interval: true,
   };
 
-  axios
-    //.post("https://stark-plains-53456.herokuapp.com/send_mail", {
-    .post("http://localhost:4000/interval_task", {
-      task: newTask,
-      uid: firebase.auth().currentUser?.uid,
-      interval: interval,
-      intervalEnd: intervalEnd,
-      count: 1,
-      name: firebase.auth().currentUser.displayName,
-    });
+  axios.post("https://stark-plains-53456.herokuapp.com/interval_task", {
+    task: newTask,
+    uid: firebase.auth().currentUser?.uid,
+    interval: interval,
+    intervalEnd: intervalEnd,
+    count: 1,
+    name: firebase.auth().currentUser.displayName,
+  });
+
+  if (notification) {
+    sendMailReminder(taskId, deadline, name, email);
+  }
 }

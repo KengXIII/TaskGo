@@ -18,8 +18,11 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { BiMessageSquareDetail } from "react-icons/bi";
 import { TiTickOutline } from "react-icons/ti";
 import { MdModeEdit } from "react-icons/md";
-import AddBox from "@material-ui/icons/AddBox";
-import IndeterminateCheckBox from "@material-ui/icons/IndeterminateCheckBox";
+import {
+  RiAddBoxFill,
+  RiChatOffLine,
+  RiCheckboxIndeterminateFill,
+} from "react-icons/ri";
 import cancelMail from "./CancelCron";
 import TaskForm from "./TaskForm";
 import TaskInfo from "./TaskInfo";
@@ -30,7 +33,6 @@ import addTask from "./AddTask";
 import sendMailReminder from "./SendMail";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
-import NotInterestedSharpIcon from "@material-ui/icons/NotInterestedSharp";
 
 export default function TaskList() {
   const [tasks, setTasks] = useState([]);
@@ -380,10 +382,10 @@ export default function TaskList() {
         <h2>
           Category Filter
           <Button style={{ cursor: "pointer" }} onClick={chooseAll}>
-            <AddBox />
+            <RiAddBoxFill />
           </Button>
           <Button style={{ cursor: "pointer" }} onClick={chooseNone}>
-            <IndeterminateCheckBox />
+            <RiCheckboxIndeterminateFill />
           </Button>
           <TaskInfo
             style={{
@@ -401,11 +403,16 @@ export default function TaskList() {
               display: "flex",
               flexDirection: "row",
               overflowX: "auto",
+              maxWidth: "80vw",
+              padding: "10px 5px",
             }}
           >
             {category.map((cat, index) => (
               <div
                 id="checkbox"
+                onClick={() =>
+                  !checkBoxList[index] ? addFilter(cat) : deleteFilter(cat)
+                }
                 style={
                   checkBoxList[index]
                     ? index % 3 === 0
@@ -477,13 +484,7 @@ export default function TaskList() {
                       }
                 }
               >
-                <div
-                  onClick={() =>
-                    !checkBoxList[index] ? addFilter(cat) : deleteFilter(cat)
-                  }
-                >
-                  {cat === "" ? <NotInterestedSharpIcon /> : cat}
-                </div>
+                <div>{cat === "" ? <RiChatOffLine /> : cat}</div>
               </div>
             ))}
           </div>
@@ -535,7 +536,7 @@ export default function TaskList() {
         {display.length <= 0 ? (
           <p>No revelant tasks!</p>
         ) : (
-          <div style={{ overflowY: "auto" }}>
+          <div style={{ overflowY: "auto", maxHeight: "45vh" }}>
             {display.map((pair, index) => (
               <div
                 style={
@@ -543,14 +544,14 @@ export default function TaskList() {
                     ? {
                         display: "flex",
                         flexDirection: "row",
-                        padding: "10px 0",
+
                         alignContent: "center",
                         backgroundColor: "#ff7a7a50",
                       }
                     : {
                         display: "flex",
                         flexDirection: "row",
-                        padding: "10px 0",
+
                         alignContent: "center",
                         borderBottom: "0.5px solid lightgrey",
                       }
@@ -559,16 +560,31 @@ export default function TaskList() {
                 <div
                   style={
                     pair.task.priority === "1"
-                      ? { backgroundColor: "darkorange", flex: "0.5%" }
+                      ? {
+                          backgroundColor: "darkorange",
+                          flex: "0.5%",
+                          padding: "10px 0",
+                        }
                       : pair.task.priority === "2"
-                      ? { backgroundColor: "#ecd540", flex: "0.5%" }
-                      : { backgroundColor: "limegreen", flex: "0.5%" }
+                      ? {
+                          backgroundColor: "#ecd540",
+                          flex: "0.5%",
+                          padding: "10px 0",
+                        }
+                      : {
+                          backgroundColor: "limegreen",
+                          flex: "0.5%",
+                          padding: "10px 0",
+                        }
                   }
                 ></div>
-                <div style={{ flex: "40%" }}>{pair.task.name}</div>
+                <div style={{ flex: "40%", padding: "10px 0" }}>
+                  {pair.task.name}
+                </div>
                 <div
                   style={{
                     flex: "10%",
+                    padding: "10px 0",
                   }}
                 >
                   <Tooltip
@@ -581,8 +597,14 @@ export default function TaskList() {
                     </Button>
                   </Tooltip>
                 </div>
-                <div style={{ flex: "20%" }}>{pair.task.category}</div>
-                <div style={{ flex: "20%" }}>
+                <div style={{ flex: "20%", padding: "10px 0" }}>
+                  {pair.task.category === "" ? (
+                    <RiChatOffLine />
+                  ) : (
+                    pair.task.category
+                  )}
+                </div>
+                <div style={{ flex: "20%", padding: "10px 0" }}>
                   {`${pair.task.deadline.toDate().toDateString().slice(0, 10)}
                   ${pair.task.deadline.toDate().toLocaleTimeString([], {
                     hour: "2-digit",
@@ -594,6 +616,7 @@ export default function TaskList() {
                     display: "flex",
                     flex: "10%",
                     justifyContent: "space-between",
+                    padding: "10px 0",
                   }}
                 >
                   <TiTickOutline

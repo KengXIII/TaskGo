@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { firebase } from "@firebase/app";
-import { AiOutlineDelete } from "react-icons/ai";
-import { GrRevert } from "react-icons/gr";
+import { AiOutlineDelete, AiOutlineHistory } from "react-icons/ai";
+
 import updateHistory from "./updateHistory";
 import addTask from "../TaskManager/AddTask";
 import TaskHistoryInfo from "./TaskHistoryInfo.js";
+import { BiMessageSquareDetail } from "react-icons/bi";
+import { Tooltip, Button } from "@material-ui/core";
 
 function TaskHistory() {
   const [history, setHistory] = useState([]);
@@ -49,7 +51,7 @@ function TaskHistory() {
       addTask(
         task.name,
         task.priority,
-        task.deadline,
+        task.deadline.toDate(),
         task.category,
         task.description,
         task.taskId
@@ -83,8 +85,134 @@ function TaskHistory() {
             }}
           />
         </h2>
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            backgroundColor: "#E2E3F4",
+            padding: "5px 0",
+            fontSize: "0.8em",
+          }}
+        >
+          <div style={{ flex: "0.5%" }}></div>
+          <div style={{ flex: "40%" }}>
+            <strong>Task Name</strong>
+          </div>
+          <div style={{ flex: "10%" }}>
+            <strong>Description</strong>
+          </div>
+          <div style={{ flex: "20%" }}>
+            <strong>Category</strong>
+          </div>
+          <div style={{ flex: "20%" }}>
+            <strong>Deadline</strong>
+          </div>
+          <div style={{ flex: "20%" }}>
+            <strong>Date Completed</strong>
+          </div>
+          <div style={{ flex: "6%" }}></div>
+          <div style={{ flex: "4%" }}></div>
+        </div>
+
         {history.length <= 0 ? (
-          "History is empty"
+          <p>You have no relevant tasks!</p>
+        ) : (
+          <div style={{ overflowY: "auto" }}>
+            {history.map((task, index) => (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignContent: "center",
+                  borderBottom: "0.5px solid lightgrey",
+                }}
+              >
+                <div
+                  style={
+                    task.priority === "1"
+                      ? {
+                          backgroundColor: "darkorange",
+                          flex: "0.5%",
+                          padding: "10px 0",
+                        }
+                      : task.priority === "2"
+                      ? {
+                          backgroundColor: "#ecd540",
+                          flex: "0.5%",
+                          padding: "10px 0",
+                        }
+                      : {
+                          backgroundColor: "limegreen",
+                          flex: "0.5%",
+                          padding: "10px 0",
+                        }
+                  }
+                ></div>
+                <div style={{ flex: "40%", padding: "10px 0" }}>
+                  {task.name}
+                </div>
+                <div
+                  style={{
+                    flex: "10%",
+                    padding: "10px 0",
+                  }}
+                >
+                  <Tooltip
+                    title={task.description}
+                    interactive
+                    placement="right"
+                  >
+                    <Button>
+                      <BiMessageSquareDetail />
+                    </Button>
+                  </Tooltip>
+                </div>
+                <div style={{ flex: "20%", padding: "10px 0" }}>
+                  {task.category}
+                </div>
+                <div style={{ flex: "20%", padding: "10px 0" }}>
+                  {`${task.deadline.toDate().toDateString().slice(0, 10)}
+                    ${task.deadline.toDate().toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}`}
+                </div>
+
+                <div style={{ flex: "20%", padding: "10px 0" }}>
+                  {`${task.dateCompleted.toDate().toDateString().slice(0, 10)}
+                    ${task.dateCompleted.toDate().toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}`}
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    flex: "6%",
+                    justifyContent: "space-between",
+                    padding: "10px 0",
+                  }}
+                >
+                  <AiOutlineDelete
+                    fontSize="1.2em"
+                    onClick={() => handleDeleteTask(index)}
+                    className="delete-icon"
+                  />
+                  <AiOutlineHistory
+                    fontSize="1.2em"
+                    onClick={() => handleRevert(task, index)}
+                    className="revert-icon"
+                  />
+                </div>
+                <div style={{ display: "flex", flex: "4%" }}></div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/*history.length <= 0 ? (
+          "You have no relevant tasks!"
         ) : (
           <div>
             <table
@@ -115,17 +243,14 @@ function TaskHistory() {
                       />
                     </td>
                     <td>
-                      <GrRevert
-                        onClick={() => handleRevert(task, index)}
-                        className="revert-icon"
-                      />
+                      
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        )}
+        )*/}
       </main>
     );
   }

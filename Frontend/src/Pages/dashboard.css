@@ -16,7 +16,7 @@
 
 .Left {
   height: 100%;
-  width: 20vw;
+  width: 20%;
   background-color: #323F52;
   margin:0;
 }
@@ -25,6 +25,8 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 .Topbar {

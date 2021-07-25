@@ -2,12 +2,8 @@ import React, { useState } from "react";
 import { Button, Dialog, DialogTitle } from "@material-ui/core";
 import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 import { BiMessageSquareDetail } from "react-icons/bi";
-import CalendarTodayIcon from "@material-ui/icons/CalendarToday";
 import { TiTickOutline } from "react-icons/ti";
-import { AiOutlineDelete } from "react-icons/ai";
-import { MdModeEdit } from "react-icons/md";
-import AddBox from "@material-ui/icons/AddBox";
-import IndeterminateCheckBox from "@material-ui/icons/IndeterminateCheckBox";
+import { AiOutlineDelete, AiOutlineHistory } from "react-icons/ai";
 
 function TaskHistoryInfo() {
   const [open, setOpen] = useState(false);
@@ -51,53 +47,20 @@ function TaskHistoryInfo() {
           >
             <p>
               <h2>Task History Dashboard</h2>
-              The Task History page displays
+              The Task History page displays tasks that are already marked
+              completed by clicking on <TiTickOutline /> in Task Dashboard.
               <br></br>
               <br></br>
-              <strong>Name</strong>
-              <br></br>
-              Fill in the name of the task.
-              <br></br>
-              <br></br>
-              <strong>Deadline</strong>
-              <br></br>
-              Specify the deadline of the task by clicking on{" "}
-              <CalendarTodayIcon fontSize="small" /> and entering the relevant
-              details.
+              <strong>Functionalities</strong>
+              All tasks are being sorted by their completion date in the Task
+              History.
               <br></br>
               <br></br>
-              TaskGo finds no purpose in allowing the creation of tasks that are
-              overdue. Hence, with the exception of editing tasks, the user
-              cannot enter dates that are earlier than the current time.
+              All tasks will be automatically removed 7 days after their date of
+              completion by default.
               <br></br>
-              <br></br>
-              <strong>Priority</strong>
-              <br></br>
-              Select the level of priority of the task.
-              <br></br>
-              <br></br>
-              The left-most selection (Red) indicates tasks of the highest
-              priority.
-              <br></br>
-              The middle selection (Orange) indicates tasks of mediocre
-              priority.
-              <br></br>
-              The right-most (Green) selection indicates tasks of the lowest
-              priority.
-              <br></br>
-              <br></br>
-              <strong>Category (Optional)</strong>
-              <br></br>
-              Enter the category in which the task belongs in. This field is
-              implemented to facilitate the users' organisation of tasks. If the
-              user does not want to assign any category to a task, this field
-              can simply be left blank.
-              <br></br>
-              <br></br>
-              <strong>Description (Optional)</strong>
-              <br></br>
-              Give a small description of the task. All miscellaneous remarks
-              about the task goes here.
+              Users can choose to change this by going under 'Settings' and
+              making the relevant changes.
             </p>
             <p>
               <h2>Task Dashboard</h2>
@@ -117,10 +80,12 @@ function TaskHistoryInfo() {
               The task name column falls under the bolded 'Task' label. In this
               column, the name of the tasks are being shown.
               <br></br>
-              At the far right side of the task name column, each task will have
-              a <BiMessageSquareDetail /> icon. Hovering over this icon would
-              result in the task description appearing in the form of a pop-up
-              bubble.
+              <br></br>
+              <strong>Description Column</strong>
+              <br></br>
+              The description column falls under the bolded 'Description' label.
+              In this column, hovering over <BiMessageSquareDetail /> will
+              reveal the task description, in the form of a pop-up bubble.
               <br></br>
               <br></br>
               <strong>Category Column</strong>
@@ -136,61 +101,30 @@ function TaskHistoryInfo() {
               this column, the deadline of the task is being displayed.
               <br></br>
               <br></br>
-              <strong>Icons Column</strong>
+              <strong>Date Completed Column</strong>
               <br></br>
-              There are three icons under the icons column. Clicking on the
-              icons would result in changes made to the Task Dashboard.
+              The dead of completion of the task falls under the bolded 'Date
+              Completed' label. In this column, the date of completion of the
+              task is being displayed.
+              <h3>Icons</h3>
+              There are two icons under the Task History List. Clicking on the
+              icons would result in changes made to the Task History List.
               <br></br>
               <br></br>
-              Clicking on <TiTickOutline /> would result in the task being
-              marked as 'complete'. All tasks that are marked as 'complete' will
-              be transferred to the 'Task History' page.
-              <br></br>
+              <strong>Deleting Tasks</strong>
               <br></br>
               Clicking on <AiOutlineDelete /> would result in the task being
               permanently deleted. Do note that this action is irreversible, and
               once deleted, the task cannot be salvaged.
               <br></br>
               <br></br>
-              Users can edit their tasks by clicking on the <MdModeEdit /> icon.
-              The task insertion form will appear, and the task will be updated
-              after the user makes the necessary update.
-            </p>
-            <p>
-              <h2>Task Filtering</h2>
-              Users can choose to filter out the tasks by selecting the relevant
-              categories under 'Category Filter'.
+              <strong>Reverting Tasks</strong>
               <br></br>
-              <br></br>
-              Clicking on <AddBox /> would cause tasks from all categories will
-              be displayed on the TaskList.
-              <br></br>
-              Clicking on <IndeterminateCheckBox /> would cause the Task
-              Dashboard to display no tasks, and reset the buttons to
-              unselected.
-            </p>
-            <p>
-              <h2>Task Sorting</h2>
-              All tasks are sorted according to deadline by default. By toggling
-              the dropdown at the top right of the screen, the user can choose
-              the way in which the tasks is sorted by.
-              <br></br>
-              <br></br>
-              <strong>Sorting Dropdown</strong>
-              <br></br>
-              <br></br>
-              Selecting <em>Deadline</em> will result in the tasks being sorted
-              by deadline. Tasks with the earliest deadline will be placed at
-              the top of the dashboard.
-              <br></br>
-              <br></br>
-              Selecting <em>Priority</em> will result in the tasks being sorted
-              by priority. Tasks with the highest priority level will be placed
-              at the top of the dashboard.
-              <br></br>
-              <br></br>
-              Selecting <em>Category</em> will result in the tasks being sorted
-              by category. The sorting is done in a alphanumeric way.
+              Clicking on <AiOutlineHistory /> would result in the completed
+              task being transported back to the Task Dashboard. This function
+              is provided for users in the case where they had mistakenly marked
+              a task as complete by clicking on the <TiTickOutline /> icon in
+              Task Dashboard.
             </p>
           </div>
           <br></br>
