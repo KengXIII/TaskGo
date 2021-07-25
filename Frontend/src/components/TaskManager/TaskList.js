@@ -534,7 +534,7 @@ export default function TaskList() {
         </div>
 
         {display.length <= 0 ? (
-          <p>No revelant tasks!</p>
+          <p>You have no relevant tasks!</p>
         ) : (
           <div style={{ overflowY: "auto", maxHeight: "45vh" }}>
             {display.map((pair, index) => (
