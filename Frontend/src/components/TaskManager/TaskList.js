@@ -311,12 +311,12 @@ export default function TaskList() {
   // This is for task addition form for Edit function.
   const [open, setOpen] = useState(false);
 
-  const handleClickOpen = (task, index) => {
-    const originalIndex = task.taskIndex;
-
+  const handleClickOpen = (pair) => {
+    const originalIndex = pair.taskIndex;
+    console.log(originalIndex);
     setNewTaskName(tasks[originalIndex].name);
     const date = new Date(
-      task.deadline.toDate().getTime() + 28800000
+      pair.task.deadline.toDate().getTime() + 28800000
     ).toISOString();
     setNewTaskDeadline(date.substring(0, date.length - 1));
     setNewTaskDescription(tasks[originalIndex].description);
@@ -343,8 +343,7 @@ export default function TaskList() {
   const [newTaskCategory, setNewTaskCategory] = useState("");
   const [editIndex, setEditIndex] = useState("");
 
-  const handleEdit = (event) => {
-    event.preventDefault();
+  const handleEdit = () => {
     //Remove the task from local array
     cancelMail(tasks[editIndex].taskId);
     const newTasks = [
@@ -417,7 +416,7 @@ export default function TaskList() {
                           borderRadius: "10px",
                           border: "solid",
                           borderColor: "#CAE5C7",
-                          padding: "10px",
+                          padding: "10px 30px",
                           fontSize: "18px",
                           cursor: "pointer",
                         }
@@ -429,7 +428,7 @@ export default function TaskList() {
                           borderRadius: "10px",
                           border: "solid",
                           borderColor: "lightblue",
-                          padding: "10px",
+                          padding: "10px 30px",
                           fontSize: "18px",
                           cursor: "pointer",
                         }
@@ -440,7 +439,7 @@ export default function TaskList() {
                           borderRadius: "10px",
                           border: "solid",
                           borderColor: "#F4B78B",
-                          padding: "10px",
+                          padding: "10px 30px",
                           fontSize: "18px",
                           cursor: "pointer",
                         }
@@ -449,7 +448,7 @@ export default function TaskList() {
                         justifyContent: "space-evenly",
                         marginRight: "30px",
                         borderRadius: "10px",
-                        padding: "10px",
+                        padding: "10px 30px",
                         border: "solid",
                         borderColor: "#CAE5C7",
                         fontSize: "18px",
@@ -460,7 +459,7 @@ export default function TaskList() {
                         justifyContent: "space-evenly",
                         marginRight: "30px",
                         borderRadius: "10px",
-                        padding: "10px",
+                        padding: "10px 30px",
                         border: "solid",
                         borderColor: "lightblue",
                         fontSize: "18px",
@@ -470,7 +469,7 @@ export default function TaskList() {
                         justifyContent: "space-evenly",
                         marginRight: "30px",
                         borderRadius: "10px",
-                        padding: "10px",
+                        padding: "10px 30px",
                         border: "solid",
                         borderColor: "#F4B78B",
                         fontSize: "18px",
@@ -494,7 +493,7 @@ export default function TaskList() {
           Task List
           <TaskForm />
           <div style={{ display: "block", float: "right" }}>
-            <FormControl style={{ float: "right" }}>
+            <FormControl>
               <NativeSelect
                 value={sort}
                 onChange={handleChange}
@@ -508,111 +507,113 @@ export default function TaskList() {
           </div>
         </h2>
 
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            backgroundColor: "#E2E3F4",
+            padding: "5px 0",
+            fontSize: "0.8em",
+          }}
+        >
+          <div style={{ flex: "0.5%" }}></div>
+          <div style={{ flex: "40%" }}>
+            <strong>Task Name</strong>
+          </div>
+          <div style={{ flex: "10%" }}>
+            <strong>Description</strong>
+          </div>
+          <div style={{ flex: "20%" }}>
+            <strong>Category</strong>
+          </div>
+          <div style={{ flex: "20%" }}>
+            <strong>Deadline</strong>
+          </div>
+          <div style={{ flex: "10%" }}></div>
+        </div>
+
         {display.length <= 0 ? (
-          <p>No relevant tasks!</p>
+          <p>No revelant tasks!</p>
         ) : (
-          <div
-            style={{
-              display: "flex",
-              marginLeft: "auto",
-              marginRight: "auto",
-            }}
-          >
-            <table
-              style={{
-                margin: "0 auto",
-                width: "100%",
-                textAlign: "left",
-                float: "left",
-                tableLayout: "fixed",
-                borderCollapse: "separate",
-                borderSpacing: "0 3px",
-              }}
-            >
-              <thead>
-                <tr>
-                  <th style={{ width: "0.25%" }}></th>
-                  <th style={{ width: "30%", paddingLeft: "5px" }}>Task</th>
-                  <th style={{ width: "4%" }}></th>
-                  <th style={{ width: "8%" }}>Category</th>
-                  <th style={{ width: "9%" }}>Deadline</th>
-                  <th style={{ width: "3%" }}></th>
-                  <th style={{ width: "3%" }}></th>
-                  <th style={{ width: "3%" }}></th>
-                </tr>
-              </thead>
-              <tbody>
-                {display.map((pair, index) => (
-                  <tr
-                    style={
-                      pair.task.deadline.toDate() < new Date()
-                        ? { backgroundColor: "#ff7a7a50" }
-                        : {}
-                    }
-                    key={index}
-                    className="scroll-list"
-                  >
-                    <td
-                      style={
-                        pair.task.priority === "1"
-                          ? { backgroundColor: "darkorange" }
-                          : pair.task.priority === "2"
-                          ? { backgroundColor: "#ecd540" }
-                          : { backgroundColor: "limegreen" }
+          <div style={{ overflowY: "auto" }}>
+            {display.map((pair, index) => (
+              <div
+                style={
+                  pair.task.deadline.toDate() < new Date()
+                    ? {
+                        display: "flex",
+                        flexDirection: "row",
+                        padding: "10px 0",
+                        alignContent: "center",
+                        backgroundColor: "#ff7a7a50",
                       }
-                    ></td>
-                    <td style={{ wordWrap: "break-word", paddingLeft: "5px" }}>
-                      {pair.task.name}
-                    </td>
-                    <td style={{ textAlign: "center", cursor: "pointer" }}>
-                      <Tooltip
-                        title={pair.task.description}
-                        interactive
-                        placement="right"
-                      >
-                        <Button>
-                          <BiMessageSquareDetail />
-                        </Button>
-                      </Tooltip>
-                    </td>
-                    <td
-                      style={{
-                        color: "darkblue",
-                        wordWrap: "break-word",
-                        paddingRight: "10px",
-                      }}
-                    >
-                      {pair.task.category}
-                    </td>
-                    <td>
-                      {`${pair.task.deadline
-                        .toDate()
-                        .toDateString()
-                        .slice(0, 10)}
+                    : {
+                        display: "flex",
+                        flexDirection: "row",
+                        padding: "10px 0",
+                        alignContent: "center",
+                        borderBottom: "0.5px solid lightgrey",
+                      }
+                }
+              >
+                <div
+                  style={
+                    pair.task.priority === "1"
+                      ? { backgroundColor: "darkorange", flex: "0.5%" }
+                      : pair.task.priority === "2"
+                      ? { backgroundColor: "#ecd540", flex: "0.5%" }
+                      : { backgroundColor: "limegreen", flex: "0.5%" }
+                  }
+                ></div>
+                <div style={{ flex: "40%" }}>{pair.task.name}</div>
+                <div
+                  style={{
+                    flex: "10%",
+                  }}
+                >
+                  <Tooltip
+                    title={pair.task.description}
+                    interactive
+                    placement="right"
+                  >
+                    <Button>
+                      <BiMessageSquareDetail />
+                    </Button>
+                  </Tooltip>
+                </div>
+                <div style={{ flex: "20%" }}>{pair.task.category}</div>
+                <div style={{ flex: "20%" }}>
+                  {`${pair.task.deadline.toDate().toDateString().slice(0, 10)}
                   ${pair.task.deadline.toDate().toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}`}
-                    </td>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    flex: "10%",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <TiTickOutline
+                    fontSize="1.2em"
+                    onClick={() => handleTaskToggle(index)}
+                  />
 
-                    <td style={{ textAlign: "center", cursor: "pointer" }}>
-                      <TiTickOutline onClick={() => handleTaskToggle(index)} />
-                    </td>
-                    <td style={{ textAlign: "center", cursor: "pointer" }}>
-                      <AiOutlineDelete
-                        onClick={() => checkDelete(index)}
-                        className="delete-icon"
-                      />
-                    </td>
-                    <td>
-                      <MdModeEdit
-                        onClick={() => handleClickOpen(pair.task, pair.index)}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                  <AiOutlineDelete
+                    fontSize="1.2em"
+                    onClick={() => checkDelete(index)}
+                    className="delete-icon"
+                  />
+
+                  <MdModeEdit
+                    fontSize="1.2em"
+                    onClick={() => handleClickOpen(pair)}
+                  />
+                </div>
+              </div>
+            ))}
             <Dialog
               open={open}
               onClose={handleClose}
@@ -774,6 +775,115 @@ export default function TaskList() {
             </Dialog>
           </div>
         )}
+
+        {/* {display.length <= 0 ? (
+          <p>No relevant tasks!</p>
+        ) : (
+          <div
+            style={{
+              display: "flex",
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
+          >
+            <table
+              style={{
+                margin: "0 auto",
+                width: "100%",
+                textAlign: "left",
+                float: "left",
+                tableLayout: "fixed",
+                borderCollapse: "separate",
+                borderSpacing: "0 3px",
+              }}
+            >
+              <thead>
+                <tr>
+                  <th style={{ width: "0.25%" }}></th>
+                  <th style={{ width: "30%", paddingLeft: "5px" }}>Task</th>
+                  <th style={{ width: "4%" }}></th>
+                  <th style={{ width: "8%" }}>Category</th>
+                  <th style={{ width: "9%" }}>Deadline</th>
+                  <th style={{ width: "3%" }}></th>
+                  <th style={{ width: "3%" }}></th>
+                  <th style={{ width: "3%" }}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {display.map((pair, index) => (
+                  <tr
+                    style={
+                      pair.task.deadline.toDate() < new Date()
+                        ? { backgroundColor: "#ff7a7a50" }
+                        : {}
+                    }
+                    key={index}
+                    className="scroll-list"
+                  >
+                    <td
+                      style={
+                        pair.task.priority === "1"
+                          ? { backgroundColor: "darkorange" }
+                          : pair.task.priority === "2"
+                          ? { backgroundColor: "#ecd540" }
+                          : { backgroundColor: "limegreen" }
+                      }
+                    ></td>
+                    <td style={{ wordWrap: "break-word", paddingLeft: "5px" }}>
+                      {pair.task.name}
+                    </td>
+                    <td style={{ textAlign: "center", cursor: "pointer" }}>
+                      <Tooltip
+                        title={pair.task.description}
+                        interactive
+                        placement="right"
+                      >
+                        <Button>
+                          <BiMessageSquareDetail />
+                        </Button>
+                      </Tooltip>
+                    </td>
+                    <td
+                      style={{
+                        color: "darkblue",
+                        wordWrap: "break-word",
+                        paddingRight: "10px",
+                      }}
+                    >
+                      {pair.task.category}
+                    </td>
+                    <td>
+                      {`${pair.task.deadline
+                        .toDate()
+                        .toDateString()
+                        .slice(0, 10)}
+                  ${pair.task.deadline.toDate().toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}`}
+                    </td>
+
+                    <td style={{ textAlign: "center", cursor: "pointer" }}>
+                      <TiTickOutline onClick={() => handleTaskToggle(index)} />
+                    </td>
+                    <td style={{ textAlign: "center", cursor: "pointer" }}>
+                      <AiOutlineDelete
+                        onClick={() => checkDelete(index)}
+                        className="delete-icon"
+                      />
+                    </td>
+                    <td>
+                      <MdModeEdit
+                        onClick={() => handleClickOpen(pair.task, pair.index)}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            
+          </div>
+        )} */}
       </main>
     );
   }
