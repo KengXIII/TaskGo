@@ -41,8 +41,8 @@ app.get("/", (req, res) => {
 app.use(function (req, res, next) {
   res.header(
     "Access-Control-Allow-Origin",
-    //"https://task-go-kengxiii.vercel.app"
-    "localhost:3000/dashboard"
+    "https://task-go-kengxiii.vercel.app"
+    // "localhost:3000/dashboard"
   );
   res.header(
     "Access-Control-Allow-Headers",
@@ -202,7 +202,7 @@ app.post("/interval_task", (req, res) => {
 
       // Email will only be requested only if they have the setting turned on
       if (notification) {
-        axios.post("http://localhost:4000/send_mail", {
+        axios.post("https://stark-plains-53456.herokuapp.com/send_mail", {
           taskName: newTask.name,
           date: deadline.toDateString(),
           time: `${deadline.toLocaleTimeString([], {
@@ -228,7 +228,7 @@ app.post("/interval_task", (req, res) => {
       `${uid}${createTime}`,
       new Date(deadline.getTime() - 86400000),
       function () {
-        axios.post("http://localhost:4000/interval_task", {
+        axios.post("https://stark-plains-53456.herokuapp.com/interval_task", {
           uid: uid,
           task: {
             name: newTask.name,
