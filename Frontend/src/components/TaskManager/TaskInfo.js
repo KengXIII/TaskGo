@@ -259,6 +259,7 @@ function TaskInfo() {
               by priority. Tasks with the highest priority level will be placed
               at the top of the Task List.
               <br></br>
+              <br></br>
               Selecting <em>Category</em> will result in the tasks being sorted
               by category. The sorting is done in a alphanumeric way.
             </p>

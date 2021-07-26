@@ -29,16 +29,18 @@ There are so many tasks and assignments to keep track of, given that students ha
 TaskGo is a web-based todo-list to help users keep track of all their tasks and provides notification when incomplete tasks are about to be due. Some key features includes,
 
 * Insert single and routine tasks
-* Create tags that users can assign tasks to.
-* Deadline, Priority and Tag sorting.
-* Filtering the tasks by their tags.
+* Create categories that users can assign tasks to.
+* Deadline, Priority and Category sorting.
+* Filtering the tasks by their category.
 * Storing completed tasks under a Task History page.
 * Email notification for incomplete tasks that are due soon.
+* Periodic cleaning of Task History
+* Personalised notification settings
 
 ## User Stories
 As a potential TaskGo user, we would want to:
 * Be able to look at all the unfinished assignments that we have in an overview page. So that we are able to keep everything concise, and reduce the likelihood of missing out on an important task.
-* Be notified before an incomplete task is due soon so that I would forget to work on them.
+* Be notified before an incomplete task is due soon so that I would not forget to work on them.
 * Sort our tasks according to their deadline/specified level of priority, so as to facilitate easier and smoother planning, and enhance viewability.
 * Filter our tasks by category so that we can better plan out tasks according to those categories.
 * Store our tasks in a “Completion” list, so that we can always refer back to these completed tasks should the time arise. 
@@ -49,6 +51,9 @@ Personalised to-do list, easily accessible through social login via Google.
 We chose to implement social login via Google of its prevalence and popularity in Singapore. As such, issues such as forgetting passwords would be rather unlikely, due to the prevalent use of Google accounts in Singapore.
 
 ### Task Handling
+
+Our tasks are sorted as arrays on the database. In user's document, the most recent sort criteria is being saved. When tasks are being added to user's tasklist, TaskGo appends the task to the back of the array and fires our task sorting function on the client's end, before being pushed to Firestore. This would mean that on our database, all tasks are sorted according to the last sorting preference they used. We find that tasks will be loaded quicker this way as compared to keeping our database unsorted and sorting it after we get the array. 
+
 Users can insert their tasks in TaskGo. There are 2 types of tasks that can be inserted - Single and Routine. Users are then prompted on information about their tasks. They are:
  
 * Name
@@ -78,7 +83,7 @@ This will provide better user experience through the increased flexibility in ou
 After the task is being created, our taskform gathers information (user's name, deadline, task name, notification settings) and pass it through axios to our backend's URL. From there, our backend schedules the task days before the deadline with the ready email template, to the recipient's email address. Should the task before completed ahead of schedule, TaskGo sends a request to cancel the cron job, hence no email will be send.
 
 ### Interval Tasks
-TaskGo packages interval tasks into a 3-step process; 
+TaskGo packages interval tasks into a 3-step process: 
 
 1. Create the 1st instance
 2. Schedule the email notification for the 1st instance
@@ -95,11 +100,9 @@ We integrated Google’s Firebase and Firestore into our React web-app. This wou
 
 Firestore will serve as our database where information like tasks and deadlines will be stored. Every user will create their own profile and personalised settings/preferences through documents. Documents are created based on their UID, which is obtained through firebase authentication, so users will only be able to access, read and write in their own document if they are authorised and logged in. In addition, we have written security rules on our Firebase console to allow read, edit and delete to enhance security.
 
-When users log in for the first time, default settings being set up in their documenet. Future updates will be saved as fields that can be accessed and read when launching the web application. Fields are immediately updated, saved and reflected on our application without having to refresh. This is implemented through firebase API's querysnapshot function, which pushes changes from the database down to our React app. This reduces the need to access our database and check for changes on an interval basis, hence greatly reducing the amount of read, write and delete usage on our firestore. 
+When users log in for the first time, default settings are being set up in their document. Future updates will be saved as fields that can be accessed and read when launching the web application. Fields are immediately updated, saved and reflected on our application without having to refresh. This is implemented through firebase API's querysnapshot function, which pushes changes from the database down to our React app. This reduces the need to access our database and check for changes on an interval basis, hence greatly reducing the amount of read, write and delete usage on our firestore. 
 
-(Shall we leave this in Scope of Functionality)
 
-Our tasks are sorted as arrays on the database. In user's document, the most recent sort criteria is being saved. When tasks are being added to user's tasklist, TaskGo appends the task to the back of the array and fires our task sorting function on the client's end, before being pushed to Firestore. This would mean that on our database, all tasks are sorted according to the last sorting preference they used. We find that tasks will be loaded quicker this way as compared to keeping our database unsorted and sorting it after we get the array. 
 
 ### HTML/CSS/JS/React 
 The web-page and UI is developed using the ReactJS library and written in JSX. Formatting is done with CSS. 
@@ -112,9 +115,7 @@ We engaged Heroku as our platform to deploy our Backend node server that support
 
 Our backend server mainly handles cron jobs that are requested by React app. We secured our backend using CORS policy that blocks all other requests that are not from our TaskGo domain, therefore keeping out malicious users who attempt to gain unauthorised requests.
  
- ## Visuals >> NEED TO REDO
- __Note: Our "Task Dashboard" and "Task History" looks different from these pictures. This is because these pictures show what we envision of the end-product, after merticulous styling is done to the various pages.__
-### Program Flow
+ ## Visuals 
 ![TaskGo Program Flow](https://user-images.githubusercontent.com/70288012/126909052-9115f147-d3f5-4497-afe0-b1a52b69981f.png)
 
 ### Examples of use
@@ -144,8 +145,8 @@ Our backend server mainly handles cron jobs that are requested by React app. We 
 TaskGo is a web-based to-do list that is designed to help our users to keep track of their routine and ad-hoc work in a clear and concise web application. The task can be modified and added according to the user's needs. As such, users would be able to experience flexibility in customising their own schedules. 
 
 Other current applications usually provide too many functions, and they tend to make the whole interface appear cluttered and messy. In contrast, we intend to provide users with enhanced UI that keeps task tracking simple through a neat and minimalist styling approach. 
-### NUSMods >> DELETE?
-NUSMods simply provides the users with the general lesson schedule. However, more can be done on the scheduling side, as students are unable to add in their own homework schedules into the calendar. 
+### Google Calendar
+Many of the feedbacks from Milestone 2 had mentioned Google Calendar as a possible replacement for TaskGo. Although it can provide functionality such as routine tasks that TaskGo has to offer, we feel that TaskGo provides additional tools. Some examples include our sorting and filtering features. This, coupled with our simplistic UI design, helps to give a nicer summary of all the impending tasks.
 ### LumiNUS
 LumiNUS highlights the due dates of important submissions / tests, as entered by NUS Module Coordinators. However, some of these dates may not be accurate, and students themselves are unable to make edits and improvements onto such scheduling functionalities.
  
@@ -231,9 +232,14 @@ As we come close to the completion of TaskGo, we will finally be working on enha
 #### Secondary Features
 * Implementation of Dark Mode, which allows our users to use TaskGo with reduced blue light exposure, helping with the eye strain that comes with prolonged screen time.
 * Giving TaskGo more aesthetically pleasing details, such as the mobile version of the application, and also the styling of the tasks/layout of the dashboards. 
-* Linking users to their NUSMods schedule through personalised link. This allows users to gain access to their NUSMods schedule should they need to refer to their schedule for planning
+* Calendar tab: Linking users to their NUSMods schedule through personalised link. This allows users to gain access to their NUSMods schedule should they need to refer to their schedule for planning
 
 ## Software Practices
+Throughout the development process, we followed strictly to our planning sequence: Ideation, Functionality, Design. Many hours were spent on the ideation phase to build a strong foundation for our project. We began with listing down the core features that we would like to develop on Google Documents. Following that, we created our first Figma Prototype and designed the general look that we envisioned TaskGo to have. 
+
+Next, we split the features into components for individual development, which we then combined through the use of Github version control and CodeTogether, which we will elaborate on in the following section.
+
+Lastly, when our core features are completed, we worked on enhancing our UI and included responsive components such as alert and confirmation dialogs. In addition, we moved from Material-UI ready-built components to our self-developed CSS flex-box designs to give us more room for customisation.
 
 ### Git
 TaskGo project is held as a single repository on Git, containing both the Frontend and Backend directory. During the course of development, we have created multiple branches to assist us in version control of key features.
@@ -255,8 +261,7 @@ When we were working on different components simultaneously, the standard versio
 This flow ensures that we get the latest updates from the remote repository before pushing on our new updates, keeping the workflow clean and not missing out on changes.
 
 #### Git ignore files
-In the first few commits that we made, we realised that there were config files that were being pushed onto the remote. This would not be an issue as long as our repository is private. However, for the deployment of the completed application, we intend to re-request new config details from Firebase and our Gmail API to maintain security in TaskGo.
-
+In the first few commits that we made, we realised that there were config files that were being pushed onto the remote. This would not be an issue as long as our repository is private. However, for the deployment of the completed application, we intend to re-request new set of config files from Firebase and our Gmail API to maintain security in TaskGo.
 
 ### VSCode
 For a seamless way to compile our work together, we used VSCode plugin *CodeTogether* during many of our project meetings. We found ourselves to be very efficient when using this plugin for coding concurrently as a pair.
@@ -265,6 +270,7 @@ For a seamless way to compile our work together, we used VSCode plugin *CodeToge
 All of our node packages are being added and managed by Yarn solely, to prevent dependency conflicts. Basic testing of our components were done through local hosts.
 
 When our backend express server was set up, we added the 'concurrently' node package that provided convenience in starting up both our nodes backend server as well as our React UI simultaenously. 
+
 
 ## Software Testing and Lessons Learnt
 Throughout our development, we have made a series of testing phases. For individual testing of components, our method of testing are as follows:
@@ -287,20 +293,24 @@ Throughout our development, we have made a series of testing phases. For individ
     - Everytime a cron-job is fired, we will be able to see messages by using "console.log".
     - The cron-jobs are being cancelled whenever we delete or mark tasks as complete. Tasks that are reverted back into "Task Dashboard" from "Task History" will also re-fire the cron-jobs.
     - While testing, we came to be aware of some special cases. For tasks incorrectly marked as complete before the 24 hour before deadline mark is passed, and if they are reverted back into "Task Dashboard" after the 24 hours mark is passed, there will be no e-mail notification made. We are still hesitant on calling this feature a 'bug', as we originally intended to develop it such that the shortest duration before the email is sent is 1 day. 
-
 7. History Cleaning
     - Tested by setting the time of deletion to every 1 minute, and putting many tasks into "Task History".
     - Tested with hard-coded date-of-completion to see if it passes the filter check
     - Added logs to our backend server so that it register all forms of changes for our reference and validation
 
-We have also requested for independent testers by allowing access to our deployed webpages to our fellow NUS friends. All of their valuable feedbacks are being collected in a Google Form, and some of the bugs being pointed out are as follows:
+### Feedback system
+Most of our feedbacks are done through Google Forms. After Milestone 2, we have opened up the Feedback section and deployed the web on Vercel. As such, we are able to get our fellow NUS students to help us check TaskGo. 
+
+Besides the Feedback system, there are times when we invited our friends to come and check out TaskGo via ZOOM Platform. We are also able to gather many feedbacks (Mostly about UI design, and task-management bugs) from this platform.
+
+All of their valuable feedbacks are being collected in a Google Form, and some of the more noticeable bugs being pointed out are as follows:
 1. Routine tasks that are marked complete, and then reverted, are being changed to single tasks. (In progress)
 2. Categories that are left empty cannot be filtered, as it is impossible to click on an empty string. (Fixed by replacing them with icons)
 3. Categories like an empty string, and spaces can be created and treated as different categories under Task Dashboard. (Fixed by changing all of such inputs as an empty string, and displaying them with icons)
 4. Some of the icons are not intuitive. (Fixed by creating tutorials at the top right corner of every page.)
 5. Clicking on 'Save Settings' will result in a "Settings updated successfully!" alert, regardless of whether there are changes or not. (We are hesitant to think of this as a bug as of now, as this means that the "Save Settings" button is working as intended).
 
-### Bug Fixes
+### Major Bug that we addressed
 1. Developing task list to display tasks dynamically
 
     One huge bug that we attempted to address was the issue of task list not updating when tasks are created on different browsers. When Browser A creates a task, Browser B which is opened before the task is created would not register the change until it is being refreshed. 
@@ -312,7 +322,7 @@ We have also requested for independent testers by allowing access to our deploye
     | Huge amount of read request | A short interval of read would increase the stress of firestore, making lots of unnecessary usage. This would pose lots of problems when our user pool increases
     | Clashes between read and write operations | When creation of task happens too close to the interval where TaskGo is fetching data from database, the update gets overridden by the previous state that was from the data fetched, hence resulting in a data loss |
 
-    Our solution was to make use of Firebase's API and implement a querysnapshot instead of getting data individually. This cut down our read and write operations from 1000 to merely 2 for the same test cases and duration
+    Our solution was to make use of Firebase's API and implement a querysnapshot instead of getting data individually. This cut down our read and write operations from 1000 to merely 6 for the same test cases and duration
 
 2. Keeping our array sorted in the database
 
@@ -326,7 +336,7 @@ We have also requested for independent testers by allowing access to our deploye
 
     Our fix was to map the task object as well as the index of the task in the original array onto display array, giving us a way to link back to the its original position.
 
-
+### Lessons Learnt
 We have came across numerous bugs along our Orbital journey. However, we would like to highlight some of the more rewarding lessons learnt when these bugs were solved.
 1. Usage of "console.log". 
     - Very helpful in showing the order of execution, the values of certain fields, and whether some lines are being read, or skipped.
