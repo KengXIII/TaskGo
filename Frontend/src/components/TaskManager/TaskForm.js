@@ -61,7 +61,7 @@ function TaskForm() {
     } else {
       setIntervalData({
         interval: true,
-        mode: "Interval",
+        mode: "Routine",
       });
     }
   };
@@ -351,12 +351,17 @@ function TaskForm() {
                   }}
                 >
                   <span style={{ flex: "28%" }}>
-                    Interval End<label style={{ color: "red" }}>*</label>
+                    Routine End<label style={{ color: "red" }}>*</label>
                   </span>
 
                   <div style={{ flex: "80%" }}>
                     <TextField
                       // Input for the interval end.
+                      inputProps={{
+                        min: new Date(Date.now() + 28800000)
+                          .toISOString()
+                          .slice(0, 10),
+                      }}
                       required={true}
                       className="interval-end"
                       type="date"
@@ -375,7 +380,7 @@ function TaskForm() {
                   }}
                 >
                   <span style={{ flex: "28%" }}>
-                    Repeat in<label style={{ color: "red" }}>*</label>
+                    Interval<label style={{ color: "red" }}>*</label>
                   </span>
                   <div style={{ flex: "80%" }}>
                     <Input

@@ -27,26 +27,21 @@ function TaskHistory() {
 
   function handleDeleteTask(index) {
     if (busy) {
-      console.log("lagged");
       window.setTimeout(handleDeleteTask, 50);
     } else {
       setBusy(true);
-      console.log("task started");
       const newTask = [...history.slice(0, index), ...history.slice(index + 1)];
       setHistory(newTask);
       updateHistory(newTask);
       setBusy(false);
-      console.log("task ended");
     }
   }
 
   function handleRevert(task, index) {
     if (busy) {
-      console.log("lagged");
       window.setTimeout(handleRevert, 50);
     } else {
       setBusy(true);
-      console.log("task started");
       // Adds tasks into input array.
       addTask(
         task.name,
@@ -65,7 +60,6 @@ function TaskHistory() {
       setHistory(newHistory);
       updateHistory(newHistory);
       setBusy(false);
-      console.log("task ended");
     }
   }
 
@@ -96,13 +90,13 @@ function TaskHistory() {
           }}
         >
           <div style={{ flex: "0.5%" }}></div>
-          <div style={{ flex: "40%" }}>
+          <div style={{ flex: "40%", paddingLeft: "10px" }}>
             <strong>Task Name</strong>
           </div>
-          <div style={{ flex: "10%" }}>
+          <div style={{ flex: "10%", paddingLeft: "5px" }}>
             <strong>Description</strong>
           </div>
-          <div style={{ flex: "20%" }}>
+          <div style={{ flex: "20%", paddingLeft: "5px" }}>
             <strong>Category</strong>
           </div>
           <div style={{ flex: "20%" }}>
@@ -118,7 +112,7 @@ function TaskHistory() {
         {history.length <= 0 ? (
           <p>You have no relevant tasks!</p>
         ) : (
-          <div style={{ overflowY: "auto" }}>
+          <div style={{ overflowY: "auto", maxHeight: "50vh" }}>
             {history.map((task, index) => (
               <div
                 style={{
@@ -149,7 +143,7 @@ function TaskHistory() {
                         }
                   }
                 ></div>
-                <div style={{ flex: "40%", padding: "10px 0" }}>
+                <div style={{ flex: "40%", padding: "10px 10px" }}>
                   {task.name}
                 </div>
                 <div
@@ -195,11 +189,13 @@ function TaskHistory() {
                   }}
                 >
                   <AiOutlineDelete
+                    style={{ cursor: "pointer" }}
                     fontSize="1.2em"
                     onClick={() => handleDeleteTask(index)}
                     className="delete-icon"
                   />
                   <AiOutlineHistory
+                    style={{ cursor: "pointer" }}
                     fontSize="1.2em"
                     onClick={() => handleRevert(task, index)}
                     className="revert-icon"

@@ -28,7 +28,6 @@ export default function addTask(
       const notification = doc.data().settings[0].notification;
       const email = doc.data().settings[0].email;
 
-      console.log(notification);
       const newTasks = [
         ...tasks.slice(0),
         {

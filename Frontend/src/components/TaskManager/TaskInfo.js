@@ -201,8 +201,22 @@ function TaskInfo() {
               <strong>Deleting Tasks</strong>
               <br></br>
               Clicking on <AiOutlineDelete /> would result in the task being
-              permanently deleted. Do note that this action is irreversible, and
-              once deleted, the task cannot be salvaged.
+              permanently deleted.
+              <br></br>
+              Do note that this action is irreversible, and once deleted, the
+              task cannot be salvaged.Hence, users will be faced with a
+              confirmation message to check if their action is really intended.
+              <br></br>
+              <br></br>
+              The delete confirmation is different for Single and Routine tasks.
+              <br></br>
+              <br></br>
+              For single tasks, users are simply faced with "Yes" and "No".
+              <br></br>
+              <br></br>
+              However, for routine tasks, users would be asked if they want to
+              delete the task along with future tasks, the task itself, or none
+              of the above.
               <br></br>
               <br></br>
               <strong>Editing Tasks</strong>

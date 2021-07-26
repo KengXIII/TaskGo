@@ -22,7 +22,6 @@ export default function addIntervaltask(
   docRef.get().then((doc) => {
     notification = doc.data().settings[0].notification;
     email = doc.data().settings[0].email;
-    console.log(notification);
   });
 
   const newTask = {

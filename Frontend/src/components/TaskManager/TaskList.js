@@ -228,7 +228,6 @@ export default function TaskList() {
       previousTask.deadline.toDate().getTime() - 86400000
     ).toISOString();
     const taskId = `${uid}${createTime}`;
-    console.log(taskId);
     cancelMail(taskId);
   }
 
@@ -315,7 +314,6 @@ export default function TaskList() {
 
   const handleClickOpen = (pair) => {
     const originalIndex = pair.taskIndex;
-    console.log(originalIndex);
     setNewTaskName(tasks[originalIndex].name);
     const date = new Date(
       pair.task.deadline.toDate().getTime() + 28800000
@@ -382,10 +380,10 @@ export default function TaskList() {
         <h2>
           Category Filter
           <Button style={{ cursor: "pointer" }} onClick={chooseAll}>
-            <RiAddBoxFill />
+            <RiAddBoxFill fontSize="2em" />
           </Button>
           <Button style={{ cursor: "pointer" }} onClick={chooseNone}>
-            <RiCheckboxIndeterminateFill />
+            <RiCheckboxIndeterminateFill fontSize="2em" />
           </Button>
           <TaskInfo
             style={{
@@ -518,13 +516,13 @@ export default function TaskList() {
           }}
         >
           <div style={{ flex: "0.5%" }}></div>
-          <div style={{ flex: "40%" }}>
+          <div style={{ flex: "40%", paddingLeft: "10px" }}>
             <strong>Task Name</strong>
           </div>
-          <div style={{ flex: "10%" }}>
+          <div style={{ flex: "10%", paddingLeft: "5px" }}>
             <strong>Description</strong>
           </div>
-          <div style={{ flex: "20%" }}>
+          <div style={{ flex: "20%", paddingLeft: "5px" }}>
             <strong>Category</strong>
           </div>
           <div style={{ flex: "20%" }}>
@@ -544,14 +542,12 @@ export default function TaskList() {
                     ? {
                         display: "flex",
                         flexDirection: "row",
-
                         alignContent: "center",
                         backgroundColor: "#ff7a7a50",
                       }
                     : {
                         display: "flex",
                         flexDirection: "row",
-
                         alignContent: "center",
                         borderBottom: "0.5px solid lightgrey",
                       }
@@ -578,7 +574,7 @@ export default function TaskList() {
                         }
                   }
                 ></div>
-                <div style={{ flex: "40%", padding: "10px 0" }}>
+                <div style={{ flex: "40%", padding: "10px 10px" }}>
                   {pair.task.name}
                 </div>
                 <div
@@ -620,17 +616,22 @@ export default function TaskList() {
                   }}
                 >
                   <TiTickOutline
+                    style={{
+                      cursor: "pointer",
+                    }}
                     fontSize="1.2em"
                     onClick={() => handleTaskToggle(index)}
                   />
 
                   <AiOutlineDelete
+                    style={{ cursor: "pointer" }}
                     fontSize="1.2em"
                     onClick={() => checkDelete(index)}
                     className="delete-icon"
                   />
 
                   <MdModeEdit
+                    style={{ cursor: "pointer" }}
                     fontSize="1.2em"
                     onClick={() => handleClickOpen(pair)}
                   />
