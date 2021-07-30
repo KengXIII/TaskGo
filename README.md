@@ -297,6 +297,8 @@ Throughout our development, we have made a series of testing phases. For individ
     - Tested by setting the time of deletion to every 1 minute, and putting many tasks into "Task History".
     - Tested with hard-coded date-of-completion to see if it passes the filter check
     - Added logs to our backend server so that it register all forms of changes for our reference and validation
+
+A more comprehensive list of our test cases can be found here: https://docs.google.com/spreadsheets/d/1NY3H6BTJZUs2ay60qd0NkKen5ZA7INPzTvJKqTR82pg/edit?usp=sharing
  
 ### Feedback system
 Most of our feedback is done through Google Forms. After Milestone 2, we have opened up the Feedback section and deployed the web on Vercel. As such, we are able to get our fellow NUS students to help us check TaskGo. 
